@@ -2258,7 +2258,7 @@ body.dark img.rounded-full {
 .group-icon::before {
     content: '';
     position: absolute;
-    left: -8px;
+    left: -12px;
     top: 50%;
     transform: translateY(-50%);
     width: 0;

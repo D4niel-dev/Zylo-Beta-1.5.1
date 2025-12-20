@@ -15,7 +15,39 @@
       "profileEffect": "pulse",
       "bannerEffect": "vignette",
       "compactMode": true,
-      "enableMusic": true
+      "enableMusic": true,
+      "startupPage": "profile",
+      "language": "en",
+      "enableSound": true,
+      "soundProfile": "default",
+      "soundVolume": "57",
+      "musicVolume": "18",
+      "muteAll": true
+    },
+    "friends": [
+      "Daniel"
+    ],
+    "friendRequests": {
+      "incoming": [],
+      "outgoing": []
+    }
+  },
+  {
+    "username": "Daniel",
+    "email": "nguyenkhacduy1372@gmail.com",
+    "password": "123456",
+    "usertag": "@d4niel_17",
+    "dob": "2000-06-29",
+    "gender": "",
+    "phone": "",
+    "avatar": "/uploads/Daniel/explore_830545609_782025.png",
+    "banner": "/uploads/Daniel/explore_639702130_315091.png",
+    "friends": [
+      "Dan"
+    ],
+    "friendRequests": {
+      "incoming": [],
+      "outgoing": []
     }
   }
 ]

@@ -1423,14 +1423,23 @@ def create_group():
     username = (data.get('username') or data.get('owner') or '').strip()
     name = (data.get('name') or '').strip()
     description = (data.get('description') or '').strip()
+    icon_data = data.get('iconData')
+
     if not username or not name:
         return jsonify({"success": False, "error": "Missing username/name"}), 400
+    
     gid = _gen_group_id()
+    icon_url = None
+    if icon_data:
+        # Save group icon under a 'groups' pseudo-user folder
+        icon_url = _save_data_url_for_user("groups", icon_data, f"{gid}_icon.png")
+
     g = {
         "id": gid,
         "name": name,
         "description": description,
         "owner": username,
+        "icon": icon_url,
         "members": [username],
         "channels": [{"id": "general", "name": "general"}],
         "messages": [],
@@ -1475,6 +1484,63 @@ def leave_group_api():
             all_groups[idx]['members'] = members
             save_groups(all_groups)
             return jsonify({"success": True})
+    return jsonify({"success": False, "error": "Group not found"}), 404
+
+
+@app.route('/api/groups/update', methods=['POST'])
+def update_group_api():
+    data = request.json or {}
+    username = (data.get('username') or '').strip()
+    group_id = (data.get('groupId') or '').strip()
+    name = (data.get('name') or '').strip()
+    description = (data.get('description') or '').strip()
+    icon_data = data.get('iconData')
+    
+    if not username or not group_id:
+        return jsonify({"success": False, "error": "Missing fields"}), 400
+        
+    all_groups = load_groups()
+    for idx, g in enumerate(all_groups):
+        if g.get('id') == group_id:
+            # Check if user is owner (or admin logic later)
+            if g.get('owner') != username:
+                return jsonify({"success": False, "error": "Not authorized"}), 403
+            
+            if name:
+                all_groups[idx]['name'] = name
+            if description is not None: # Empty description allowed
+                all_groups[idx]['description'] = description
+            
+            if icon_data:
+                icon_url = _save_data_url_for_user("groups", icon_data, f"{group_id}_icon.png")
+                if icon_url:
+                    all_groups[idx]['icon'] = icon_url
+            
+            save_groups(all_groups)
+            return jsonify({"success": True, "group": all_groups[idx]})
+            
+    return jsonify({"success": False, "error": "Group not found"}), 404
+
+
+@app.route('/api/groups/delete', methods=['POST'])
+def delete_group_api():
+    data = request.json or {}
+    username = (data.get('username') or '').strip()
+    group_id = (data.get('groupId') or '').strip()
+    
+    if not username or not group_id:
+        return jsonify({"success": False, "error": "Missing fields"}), 400
+        
+    all_groups = load_groups()
+    for idx, g in enumerate(all_groups):
+        if g.get('id') == group_id:
+            if g.get('owner') != username:
+                return jsonify({"success": False, "error": "Not authorized"}), 403
+            
+            del all_groups[idx]
+            save_groups(all_groups)
+            return jsonify({"success": True})
+            
     return jsonify({"success": False, "error": "Group not found"}), 404
 
 

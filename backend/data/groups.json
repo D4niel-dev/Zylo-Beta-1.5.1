@@ -1,21 +1,20 @@
 [
   {
-    "id": "g235948",
-    "name": "Zylo Support Official",
-    "description": "",
-    "owner": "Dan",
+    "id": "g723561",
+    "name": "Zylo's Support (Official)",
+    "description": "The official support server for Zylo!",
+    "owner": "Daniel",
+    "icon": "/uploads/groups/explore_953400484_653019.png",
     "members": [
-      "Dan"
+      "Daniel"
     ],
-    "messages": [
+    "channels": [
       {
-        "username": "Dan",
-        "message": "yoooo"
-      },
-      {
-        "username": "Dan",
-        "message": "the official server for zylo support!!"
+        "id": "general",
+        "name": "general"
       }
-    ]
+    ],
+    "messages": [],
+    "createdAt": 1766211254
   }
 ]
