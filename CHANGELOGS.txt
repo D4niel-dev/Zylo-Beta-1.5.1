@@ -22,7 +22,7 @@
 - Fix some UI functions
 
 
-> **Zylo-Beta-v1.2** *(Latest)*
+> **Zylo-Beta-v1.2**
 
 *[NEW]:*
 - Profile editing: avatar/banner upload preview and persistence.
@@ -47,3 +47,19 @@
 - Backend cleanup: removed duplicates/unreachable code, added migrations.
 - Signup : fix the bug with the icon not changing to the right version when toggle.
 - Performance tweaks and minor bug fixes.
+
+
+> **Zylo-Beta-v1.2.1** *(Latest)*
+
+*[NEW]:*
+- Theme Editor: Added "Main Background" color picker for granular UI customization.
+- Theme Editor: Added "Reset to Default" button to restore original settings.
+- Theme Editor: New "Midnight" preset theme with cyan accents.
+
+*[IMPROVEMENTS]:*
+- Theme Editor: Implemented custom high-visibility scrollbars for the modal.
+- Theme Editor: Restructured modal layout for better accessibility.
+
+*[FIXES]:*
+- DM Chat: Removed redundant border-top from the message input container.
+- Mobile: Restored standard sidebar navigation and fixed structural glitches.

@@ -2385,19 +2385,60 @@ body.dark img.rounded-full {
 
 /* === Theme Editor Scrollbar === */
 .te-scroll-container::-webkit-scrollbar {
-    width: 10px;
+    width: 12px;
 }
 
 .te-scroll-container::-webkit-scrollbar-track {
-    background: #2f3136;
+    background: #1e1f22;
+    /* even darker for contrast */
 }
 
 .te-scroll-container::-webkit-scrollbar-thumb {
-    background: #202225;
-    border-radius: 5px;
-    border: 2px solid #2f3136;
+    background: #4f545c;
+    /* lighter "gray-500" for visibility */
+    border-radius: 6px;
+    border: 3px solid #1e1f22;
 }
 
 .te-scroll-container::-webkit-scrollbar-thumb:hover {
-    background: #18191c;
+    background: #72767d;
+}
+
+/* Ensure mobile sidebar covers the full screen correctly */
+@media (max-width: 768px) {
+    #subPanelContainer {
+        width: 80% !important;
+        max-width: 300px;
+    }
+
+    main {
+        width: 100vw !important;
+        position: relative;
+    }
+}
+
+/* === Theme Variable Overrides === */
+body.theme-custom header {
+    background-color: var(--navbar-bg) !important;
+    color: var(--text-color) !important;
+}
+
+body.theme-custom aside#subPanelContainer {
+    background-color: var(--sidebar-bg) !important;
+}
+
+body.theme-custom #mainContent,
+body.theme-custom .tab-content,
+body.theme-custom #friendsChatMessages,
+body.theme-custom #groupChatMessages {
+    background-color: var(--main-bg) !important;
+}
+
+body.theme-custom .bg-discord-gray-800 {
+    background-color: var(--panel-bg) !important;
+}
+
+body.theme-custom .text-white,
+body.theme-custom .text-discord-gray-300 {
+    color: var(--text-color) !important;
 }
