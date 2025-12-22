@@ -12,7 +12,8 @@
     "channels": [
       {
         "id": "general",
-        "name": "general"
+        "name": "general",
+        "type": "text"
       },
       {
         "id": "2199",
@@ -30,6 +31,7 @@
         "type": "voice"
       }
     ],
+<<<<<<< HEAD
     "messages": [
       {
         "username": "Dan",
@@ -168,5 +170,9 @@
       }
     ],
     "createdAt": 1766391858
+=======
+    "messages": [{}],
+    "createdAt": 1766211254
+>>>>>>> b6fa5c0660d5f67e9c872149c9d22563536048f9
   }
 ]

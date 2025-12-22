@@ -21,7 +21,7 @@ when the full release of the app is out!
 - Change the `local_ip` and `host_ip` in `main.py` and `app.py`.
 - Change them to your phone IP and/or/if you're using 4G/5G, use the IP that you are using 4G/5G.
 
-**NOTES:**
+# **NOTES:**
 
 - The app can be run without *Internet* but some features of the app maybe disable because most of them need Wi-Fi to process.
 
