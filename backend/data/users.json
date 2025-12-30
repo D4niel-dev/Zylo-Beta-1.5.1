@@ -21,7 +21,10 @@
     "settings": {
       "profileEffect": "pulse",
       "bannerEffect": "vignette",
-      "startupPage": "chats"
+      "startupPage": "profile",
+      "compactMode": false,
+      "showTooltips": true,
+      "enableAnimations": true
     }
   },
   {
@@ -38,11 +41,14 @@
     "aboutMe": "Any feedback or reports in this account will be send to @d4niel_1f",
     "settings": {
       "profileEffect": "pulse",
-      "bannerEffect": "vignette",
-      "startupPage": "settings",
+      "bannerEffect": "none",
+      "startupPage": "profile",
       "enableMusic": false,
       "soundProfile": "soft",
-      "duckMusic": true
+      "duckMusic": true,
+      "language": "en",
+      "compactMode": false,
+      "showTooltips": true
     },
     "friends": [
       "Dan"

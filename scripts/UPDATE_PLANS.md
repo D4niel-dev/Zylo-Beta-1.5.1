@@ -183,9 +183,8 @@ This applies to the **second sidebar column**
 **Planned Changes**
 - Add a seperate sidebar for mobile users (like how discrod and zalo did)
 - The layout should be like this how discord did the sidebar :
-            | DMs/Home | Cloud | Profile |
+          | DMs/Home | Cloud | Settings | Profile |
 *(if Home is disable then only the DMs)*
-*(the Settings tab should be in the Profile tab - a gear icon on the top left of the Profile card)*
 
 ---
 

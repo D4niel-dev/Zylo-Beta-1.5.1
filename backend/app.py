@@ -1728,6 +1728,8 @@ def dm_send():
         'fileName': data.get('fileName'),
         'fileType': data.get('fileType'),
         'fileData': data.get('fileData'),
+        'fileData': data.get('fileData'),
+        'replyTo': data.get('replyTo'),
         'createdAt': int(__import__('time').time()),
     }
     all_dms = load_dms()
@@ -1761,14 +1763,15 @@ def handle_send_dm(data):
             'fileName': (data or {}).get('fileName'),
             'fileType': (data or {}).get('fileType'),
             'fileData': (data or {}).get('fileData'),
+            'fileData': (data or {}).get('fileData'),
+            'replyTo': (data or {}).get('replyTo'),
             'createdAt': int(__import__('time').time()),
         }
         all_dms = load_dms()
         all_dms.append(entry)
         save_dms(all_dms)
-        # Emit only to the sender and recipient
+        # Emit only to the recipient (sender handles their own message locally)
         emit('receive_dm', entry, room=f"user_{to}")
-        emit('receive_dm', entry, room=f"user_{frm}")
     except Exception:
         pass
 
@@ -2002,7 +2005,9 @@ def send_group_message_api():
                 'sticker_src': data.get('sticker_src'),
                 'fileData': data.get('fileData'),
                 'fileName': data.get('fileName'),
-                'fileType': data.get('fileType')
+                'fileName': data.get('fileName'),
+                'fileType': data.get('fileType'),
+                'replyTo': data.get('replyTo')
             }
             messages = group.get('messages', [])
             messages.append(msg_entry)
@@ -2041,11 +2046,29 @@ def edit_group_message_api():
             messages = group.get('messages', [])
             for msg_idx, msg in enumerate(messages):
                 if msg.get('timestamp') == message_timestamp and msg.get('username') == username and msg.get('channel') == channel:
+                    # Save history before overwriting
+                    if 'history' not in messages[msg_idx]:
+                        messages[msg_idx]['history'] = []
+                    
+                    messages[msg_idx]['history'].append({
+                        'content': messages[msg_idx]['message'],
+                        'timestamp': messages[msg_idx].get('editedAt') or messages[msg_idx]['timestamp']
+                    })
+
                     messages[msg_idx]['message'] = new_message
                     messages[msg_idx]['edited'] = True
                     messages[msg_idx]['editedAt'] = int(__import__('time').time())
+                    
                     all_groups[idx]['messages'] = messages
                     save_groups(all_groups)
+
+                    # Emit update event
+                    socketio.emit('group_message_update', {
+                        'groupId': group_id,
+                        'channel': channel,
+                        'message': messages[msg_idx]
+                    }, room=group_id)
+
                     return jsonify({"success": True, "message": messages[msg_idx]})
             return jsonify({"success": False, "error": "Message not found"}), 404
     
@@ -2125,6 +2148,14 @@ def delete_group_message_api():
                     messages.pop(msg_idx)
                     all_groups[idx]['messages'] = messages
                     save_groups(all_groups)
+                    
+                    # Emit delete event
+                    socketio.emit('group_message_delete', {
+                        'groupId': group_id,
+                        'channel': channel,
+                        'timestamp': message_timestamp
+                    }, room=group_id)
+                    
                     return jsonify({"success": True})
             return jsonify({"success": False, "error": "Message not found"}), 404
     
@@ -2153,6 +2184,47 @@ def serve_static_file(path):
     if path == 'manifest.webmanifest':
         return send_from_directory(os.path.join(FRONTEND_DIR, 'js'), 'manifest.webmanifest')
     return send_from_directory(FRONTEND_DIR, path)
+
+@app.route('/api/groups/message/read', methods=['POST'])
+def read_group_message_api():
+    """Mark a message as read by a user."""
+    data = request.json or {}
+    group_id = data.get('groupId', '').strip()
+    channel = data.get('channel', 'general').strip()
+    username = data.get('username', '').strip()
+    message_timestamp = data.get('timestamp')
+    
+    if not group_id or not username or not message_timestamp:
+        return jsonify({"success": False, "error": "Missing fields"}), 400
+    
+    all_groups = load_groups()
+    
+    for idx, group in enumerate(all_groups):
+        if group.get('id') == group_id:
+            messages = group.get('messages', [])
+            for msg_idx, msg in enumerate(messages):
+                if msg.get('timestamp') == message_timestamp and msg.get('channel') == channel:
+                    
+                    read_by = msg.get('readBy', [])
+                    if username not in read_by:
+                        read_by.append(username)
+                        messages[msg_idx]['readBy'] = read_by
+                        all_groups[idx]['messages'] = messages
+                        save_groups(all_groups)
+                        
+                        # Emit read update
+                        socketio.emit('group_message_read_update', {
+                            'groupId': group_id,
+                            'channel': channel,
+                            'timestamp': message_timestamp,
+                            'readBy': read_by
+                        }, room=group_id)
+                        
+                    return jsonify({"success": True, "readBy": read_by})
+            return jsonify({"success": False, "error": "Message not found"}), 404
+    
+    return jsonify({"success": False, "error": "Group not found"}), 404
+
 
 # Run the app (IMPORTANT: Use socketio.run to enable Socket.IO support)
 if __name__ == "__main__":

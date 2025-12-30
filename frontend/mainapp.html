@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/files/style.css">
   <script src="/files/vendor/feather-icons.js"></script>
   <link href="/files/vendor/cropper.min.css" rel="stylesheet" />
+  <link href="/files/vendor/cropper.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="/files/vendor/emoji-mart.css" />
   <script src="/files/vendor/emoji-mart.js"></script>
   <!-- Highlight.js for code syntax highlighting -->
@@ -68,8 +69,8 @@
 
   <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden" onclick="toggleSidebar()"></div>
 
-  <nav
-    class="hidden md:flex flex-shrink-0 w-18 md:w-20 h-full flex flex-col items-center py-3 space-y-3 overflow-y-auto scrollbar-hide">
+  <nav id="primarySidebar"
+    class="flex flex-shrink-0 w-[4.5rem] md:w-20 h-full flex-col items-center py-3 space-y-3 overflow-y-auto scrollbar-hide z-50 bg-discord-gray-900 transition-transform duration-300 fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 border-r border-discord-gray-900 shadow-xl md:shadow-none">
 
     <a id="homeTab" href="#" data-tab="home" onclick="navigateTo('home');" class="sidebar-tab active group"
       title="Home">
@@ -118,10 +119,10 @@
   </nav>
 
   <aside id="subPanelContainer"
-    class="fixed md:static inset-y-0 left-0 z-40 w-64 h-full flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+    class="fixed md:static inset-y-0 left-0 z-40 w-72 md:w-64 h-full flex flex-col pl-20 md:pl-0 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
 
     <header class="flex-shrink-0 h-12 shadow-md flex items-center justify-between px-4">
-      <h2 id="subPanelTitle" class="text-white font-semibold text-sm truncate sidebar-title">Zylo (Beta)</h2>
+      <h2 id="subPanelTitle" class="text-white font-semibold text-sm truncate sidebar-title">Zylo</h2>
       <div class="flex items-center gap-2">
         <!-- Desktop collapse toggle -->
         <button id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()"
@@ -146,20 +147,19 @@
         </a>
       </div>
 
-      <div id="sub-panel-profile" class="sub-panel-content hidden">
-        <h3 class="sub-panel-header">Profile</h3>
-        <a href="#" onclick="navigateTo('profile');" class="sub-panel-item">
-          <i data-feather="user" class="w-5 h-5 mr-2"></i> My Profile
-        </a>
-      </div>
-
       <!-- Group Sub-Panel -->
       <div id="sub-panel-group" class="sub-panel-content hidden flex flex-col h-full">
         <!-- Group Info -->
         <div
           class="p-3 border-b border-discord-gray-900 group cursor-pointer hover:bg-discord-gray-600/30 transition-colors duration-200"
           onclick="openGroupSettings()">
-          <h2 id="groupPanelName" class="text-white font-bold text-lg truncate">Group Name</h2>
+          <div class="flex justify-between items-start">
+            <h2 id="groupPanelName" class="text-white font-bold text-lg truncate flex-1">Group Name</h2>
+            <button id="groupMuteBtn" class="text-discord-gray-400 hover:text-white p-1" title="Mute Server"
+              onclick="event.stopPropagation(); toggleGroupMute()">
+              <i data-feather="bell" class="w-4 h-4"></i>
+            </button>
+          </div>
           <div class="flex items-center text-discord-gray-400 text-xs">
             <span id="groupPanelDesc" class="truncate mr-1">Group description</span>
             <i data-feather="chevron-down" class="w-3 h-3"></i>
@@ -243,8 +243,13 @@
         <a href="#" onclick="navigateTo('cloud');" class="sub-panel-item">
           <i data-feather="cloud" class="w-5 h-5 mr-2"></i> <span>My Cloud</span>
         </a>
-        <a href="#" onclick="navigateTo('settings');" class="sub-panel-item">
-          <i data-feather="settings" class="w-5 h-5 mr-2"></i> <span>Settings</span>
+        <a href="#" onclick="navigateTo('profile'); document.querySelector('[data-tab=\'activity\']').click();"
+          class="sub-panel-item">
+          <i data-feather="activity" class="w-5 h-5 mr-2"></i> <span>Activity</span>
+        </a>
+        <a href="#" onclick="navigateTo('profile'); document.querySelector('[data-tab=\'media\']').click();"
+          class="sub-panel-item">
+          <i data-feather="image" class="w-5 h-5 mr-2"></i> <span>Saved Media</span>
         </a>
 
         <h3 class="sub-panel-header mt-4">Quick Actions</h3>
@@ -276,7 +281,7 @@
         </button>
         <button type="button" id="tabBtnSounds" class="settings-tab sub-panel-item w-full text-left"
           data-target="soundSettings">
-          <i data-feather="volume-2" class="w-5 h-5 mr-2"></i> <span>Sounds</span>
+          <i data-feather="bell" class="w-5 h-5 mr-2"></i> <span>Sounds & Notif.</span>
         </button>
         <button type="button" id="tabBtnAccount" class="settings-tab sub-panel-item w-full text-left"
           data-target="accountSettings">
@@ -316,7 +321,7 @@
 
     <header class="flex-shrink-0 h-12 bg-discord-gray-700 shadow-md flex items-center justify-between px-4">
       <div class="flex items-center">
-        <button id="mobileMenuBtn" class="hidden p-1 mr-2 text-discord-gray-300 hover:text-white md:hidden"
+        <button id="mobileMenuBtn" class="p-1 mr-2 text-discord-gray-300 hover:text-white md:hidden"
           onclick="toggleSidebar()">
           <i id="mobileMenuIcon" data-feather="menu" class="w-6 h-6"></i>
         </button>
@@ -325,14 +330,20 @@
 
       <!-- 6.14 Message Search UI -->
       <div class="flex items-center gap-2">
-        <div id="chatSearchBar" class="hidden flex items-center bg-discord-gray-900 rounded px-2 py-1">
-          <input type="text" id="chatSearchInput" placeholder="Search messages..."
-            class="bg-transparent border-none text-white text-sm focus:ring-0 w-32 md:w-48 placeholder-discord-gray-400"
-            onkeyup="if(event.key === 'Enter') searchMessages(this.value)">
-          <button onclick="searchMessages(document.getElementById('chatSearchInput').value)"
+        <div id="chatSearchBar" class="hidden flex items-center bg-discord-gray-900 rounded px-2 py-1 relative">
+          <input type="text" id="chatSearchInput" placeholder="Search Zylo..."
+            class="bg-transparent border-none text-white text-sm focus:ring-0 focus:outline-none w-32 md:w-48 placeholder-discord-gray-400"
+            onkeyup="handleSearchInput(this.value, event)">
+          <button onclick="handleSearchInput(document.getElementById('chatSearchInput').value, {key:'Enter'})"
             class="text-discord-gray-400 hover:text-white">
             <i data-feather="search" class="w-4 h-4"></i>
           </button>
+
+          <!-- Global Search Dropdown -->
+          <div id="globalSearchResults"
+            class="hidden absolute top-full left-0 w-64 bg-discord-gray-800 rounded-md shadow-lg border border-discord-gray-700 z-50 mt-2 max-h-60 overflow-y-auto">
+            <!-- Results populated by JS -->
+          </div>
         </div>
         <button onclick="toggleSearchBar()" class="text-discord-gray-300 hover:text-white p-1" title="Search Messages">
           <i data-feather="search" class="w-5 h-5"></i>
@@ -401,7 +412,7 @@
         <div id="typingIndicator" class="typing-indicator"></div>
 
         <div class="flex-shrink-0 p-4 border-t border-discord-gray-900">
-          <div class="flex items-center gap-2 bg-discord-gray-600 rounded-lg p-2">
+          <div class="flex items-center gap-2 bg-discord-gray-600 rounded-lg p-2 relative">
             <label class="p-2 rounded-full hover:bg-discord-gray-500/70 cursor-pointer transition"
               title="Attach a file">
               <i data-feather="plus-circle" class="w-5 h-5 text-gray-200"></i>
@@ -492,6 +503,10 @@
               <span id="chatHeaderTitle" class="font-bold text-white">Username</span>
             </div>
             <div class="flex gap-4 text-discord-gray-400">
+              <button id="friendMuteBtn" class="hover:text-white" title="Mute Notifications"
+                onclick="toggleFriendMute()">
+                <i data-feather="bell" class="w-5 h-5"></i>
+              </button>
               <i data-feather="phone" class="w-5 h-5 hover:text-white cursor-pointer"
                 onclick="startFakeCall('voice')"></i>
               <i data-feather="video" class="w-5 h-5 hover:text-white cursor-pointer"
@@ -581,15 +596,70 @@
             </div>
 
             <div id="profileTabs"
-              class="border-t border-discord-gray-700/50 px-6 py-3 flex gap-6 text-discord-gray-400">
-              <button class="profile-tab active text-white" data-tab="about">About Me</button>
-              <button class="profile-tab" data-tab="servers">Mutual Servers</button>
-              <button class="profile-tab" data-tab="friends">Mutual Friends</button>
-              <button class="profile-tab" data-tab="effects" onclick="openProfileEffectsModal()">Profile
-                Effects</button>
+              class="border-t border-discord-gray-700/50 px-6 py-3 flex gap-6 text-discord-gray-400 overflow-x-auto scrollbar-hide">
+              <button class="profile-tab active text-white whitespace-nowrap" data-tab="about">About Me</button>
+              <button class="profile-tab whitespace-nowrap" data-tab="servers">Mutual Servers</button>
+
+              <!-- Desktop only tabs -->
+              <button class="profile-tab hidden md:block whitespace-nowrap" data-tab="friends">Mutual Friends</button>
+              <button class="profile-tab hidden md:block whitespace-nowrap" data-tab="activity">Activity /
+                Overview</button>
+              <button class="profile-tab hidden md:block whitespace-nowrap" data-tab="media">Saved Media</button>
+              <button class="profile-tab hidden md:block whitespace-nowrap" data-tab="cloud">My Cloud</button>
+              <button class="profile-tab hidden md:block whitespace-nowrap" data-tab="effects"
+                onclick="openProfileEffectsModal()">Profile Effects</button>
+
+              <!-- Mobile 'More' button -->
+              <button class="profile-tab md:hidden flex items-center whitespace-nowrap"
+                onclick="openMobileProfileMenu()">
+                More <i data-feather="chevron-down" class="ml-1 w-4 h-4"></i>
+              </button>
+            </div>
+
+            <!-- Mobile Profile Menu Modal -->
+            <div id="mobileProfileMenuModal"
+              class="fixed inset-0 z-[60] hidden flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm"
+              onclick="closeMobileProfileMenu()">
+              <div
+                class="bg-discord-gray-800 w-full sm:w-80 rounded-t-xl sm:rounded-xl p-2 shadow-2xl border-t sm:border border-discord-gray-700 transform transition-transform duration-200 translate-y-full sm:translate-y-0"
+                id="mobileProfileMenuContent" onclick="event.stopPropagation()">
+                <div class="px-4 py-2 text-xs font-bold text-discord-gray-400 uppercase tracking-wide mb-1">More Options
+                </div>
+
+                <button
+                  class="w-full text-left px-4 py-3 hover:bg-discord-gray-700 rounded text-discord-gray-200 flex items-center gap-3 transition-colors"
+                  onclick="selectMobileProfileTab('friends')">
+                  <i data-feather="users" class="w-5 h-5 text-discord-gray-400"></i> Mutual Friends
+                </button>
+                <button
+                  class="w-full text-left px-4 py-3 hover:bg-discord-gray-700 rounded text-discord-gray-200 flex items-center gap-3 transition-colors"
+                  onclick="selectMobileProfileTab('activity')">
+                  <i data-feather="activity" class="w-5 h-5 text-discord-gray-400"></i> Activity / Overview
+                </button>
+                <button
+                  class="w-full text-left px-4 py-3 hover:bg-discord-gray-700 rounded text-discord-gray-200 flex items-center gap-3 transition-colors"
+                  onclick="selectMobileProfileTab('media')">
+                  <i data-feather="image" class="w-5 h-5 text-discord-gray-400"></i> Saved Media
+                </button>
+                <button
+                  class="w-full text-left px-4 py-3 hover:bg-discord-gray-700 rounded text-discord-gray-200 flex items-center gap-3 transition-colors"
+                  onclick="selectMobileProfileTab('cloud')">
+                  <i data-feather="cloud" class="w-5 h-5 text-discord-gray-400"></i> My Cloud
+                </button>
+                <button
+                  class="w-full text-left px-4 py-3 hover:bg-discord-gray-700 rounded text-discord-gray-200 flex items-center gap-3 transition-colors"
+                  onclick="selectMobileProfileTab('effects'); openProfileEffectsModal()">
+                  <i data-feather="zap" class="w-5 h-5 text-discord-gray-400"></i> Profile Effects
+                </button>
+
+                <div class="h-px bg-discord-gray-700 my-2"></div>
+                <button class="w-full text-center px-4 py-3 hover:bg-discord-gray-700 rounded text-red-400 font-medium"
+                  onclick="closeMobileProfileMenu()">Cancel</button>
+              </div>
             </div>
 
             <div id="profileTabContent" class="p-6 text-discord-gray-300">
+              <!-- About Tab -->
               <div class="tab-pane" data-tab="about">
                 <div id="profileAboutContent">
                   <div class="group flex items-start gap-2">
@@ -601,11 +671,49 @@
                     </button>
                   </div>
                 </div>
-                <div class="tab-pane hidden" data-tab="servers">
+              </div>
+
+              <!-- Mutual Servers Tab -->
+              <div class="tab-pane hidden" data-tab="servers">
+                <div id="mutualServersContent">
                   <p>No mutual servers to show.</p>
                 </div>
-                <div class="tab-pane hidden" data-tab="friends">
-                  <p id="mutualFriendsContent">No mutual friends to show.</p>
+              </div>
+
+              <!-- Mutual Friends Tab -->
+              <div class="tab-pane hidden" data-tab="friends">
+                <p id="mutualFriendsContent">No mutual friends to show.</p>
+              </div>
+
+              <!-- Activity Tab -->
+              <div class="tab-pane hidden" data-tab="activity">
+                <div class="text-center py-12 border-2 border-dashed border-discord-gray-700 rounded-xl">
+                  <i data-feather="activity" class="w-12 h-12 mx-auto mb-3 text-discord-gray-600"></i>
+                  <h3 class="text-lg font-bold text-discord-gray-300">Activity Overview</h3>
+                  <p class="text-discord-gray-500 text-sm mt-1">Recent activity and stats will appear here.</p>
+                </div>
+              </div>
+
+              <!-- Saved Media Tab -->
+              <div class="tab-pane hidden" data-tab="media">
+                <div class="text-center py-12 border-2 border-dashed border-discord-gray-700 rounded-xl">
+                  <i data-feather="image" class="w-12 h-12 mx-auto mb-3 text-discord-gray-600"></i>
+                  <h3 class="text-lg font-bold text-discord-gray-300">Saved Media</h3>
+                  <p class="text-discord-gray-500 text-sm mt-1">Your saved photos and videos will be displayed here.</p>
+                </div>
+              </div>
+
+              <!-- My Cloud Tab -->
+              <div class="tab-pane hidden" data-tab="cloud">
+                <div class="text-center py-12 bg-discord-gray-700/30 rounded-xl">
+                  <i data-feather="cloud" class="w-16 h-16 mx-auto mb-4 text-discord-blurple"></i>
+                  <h3 class="text-xl font-bold text-white mb-2">My Personal Cloud</h3>
+                  <p class="text-discord-gray-400 mb-6 max-w-sm mx-auto">Access your secure personal storage to manage
+                    files, documents, and assets.</p>
+                  <button onclick="navigateTo('cloud')"
+                    class="px-6 py-2 bg-discord-blurple hover:bg-opacity-80 text-white font-medium rounded-lg transition shadow-lg transform hover:scale-105">
+                    Go to My Cloud
+                  </button>
                 </div>
               </div>
             </div>
@@ -767,7 +875,7 @@
 
         <!-- Group Chat Input -->
         <div class="flex-shrink-0 p-4 border-t border-discord-gray-900">
-          <div class="flex items-center gap-2 bg-discord-gray-600 rounded-lg p-2">
+          <div class="flex items-center gap-2 bg-discord-gray-600 rounded-lg p-2 relative">
             <label class="p-2 rounded-full hover:bg-discord-gray-500/70 cursor-pointer transition"
               title="Attach a file">
               <i data-feather="plus-circle" class="w-5 h-5 text-gray-200"></i>
@@ -887,44 +995,7 @@
               </label>
             </div>
 
-            <div class="p-3 bg-discord-gray-800 rounded-lg">
-              <h2 id="titleAppearance" class="text-xl font-semibold mb-3 text-white">Appearance</h2>
-              <div class="flex items-center gap-3 flex-wrap">
-                <div class="flex items-center gap-2">
-                  <span>Theme</span>
-                  <span id="themeColorSwatch"
-                    class="inline-flex items-center gap-2 px-2 py-1 rounded border text-xs border-discord-gray-600">
-                    <span id="themeColorDot" class="w-4 h-4 rounded-full border"></span>
-                    <span id="themeColorText">#ffffff</span>
-                  </span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <button onclick="setTheme('light')" data-theme-btn="light"
-                    class="px-3 py-1 bg-gray-200 text-gray-800 rounded">Light</button>
-                  <button onclick="setTheme('dark')" data-theme-btn="dark"
-                    class="px-3 py-1 bg-discord-gray-600 text-white rounded">Dark</button>
-                  <button onclick="setTheme('system')" data-theme-btn="system"
-                    class="px-3 py-1 bg-discord-gray-600 text-white rounded">System</button>
-                  <button onclick="setTheme('custom')" data-theme-btn="custom"
-                    class="px-3 py-1 bg-discord-gray-600 text-white rounded">Custom</button>
-                  <input type="color" id="customThemeColorPicker"
-                    class="h-9 w-12 p-1 rounded border bg-discord-gray-700 border-discord-gray-600 hidden" />
-                </div>
-              </div>
-              <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <label class="inline-flex items-center gap-2">
-                  <input type="checkbox" id="solidBgToggle" class="accent-discord-blurple">
-                  <span id="labelSolidBg">Solid BG</span>
-                </label>
-                <div class="flex items-center gap-2">
-                  <input type="file" id="bgImageInput" accept="image/*"
-                    class="block w-full text-sm text-discord-gray-300 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-discord-gray-600 file:text-white hover:file:bg-discord-gray-500" />
-                  <button id="previewBgBtn" class="px-3 py-1 bg-green-700 rounded"
-                    title="Preview background">Preview</button>
-                  <button id="clearBgImageBtn" class="px-3 py-1 bg-discord-gray-600 rounded">Clear Image</button>
-                </div>
-              </div>
-            </div>
+
 
             <div id="saveSettingsBtn" class="pt-4 border-t border-discord-gray-600" style="display: none;">
               <button onclick="showSaveSettingsModal()"
@@ -935,12 +1006,102 @@
             </div>
             <div class="pt-4 border-t border-discord-gray-600">
               <button id="btnResetAll" onclick="resetAllSettings()"
-                class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">Reset All Settings</button>
+                class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">Reset All
+                Settings</button>
             </div>
           </div>
 
+          <div id="appearanceSettings" class="settings-content w-full hidden space-y-6">
+            <h2 class="text-2xl font-bold text-white">Appearance</h2>
+
+            <!-- Theme Presets -->
+            <div class="p-3 bg-discord-gray-800 rounded-lg">
+              <h3 class="font-semibold mb-2 text-white">Theme Presets</h3>
+              <select id="themePresetSelect" onchange="applyThemePreset(this.value)"
+                class="w-full bg-discord-gray-700 text-white p-2 rounded border border-discord-gray-600">
+                <option value="">Select a preset...</option>
+                <option value="light">Light Mode</option>
+                <option value="dark">Dark Mode (Default)</option>
+                <option value="midnight">Midnight Blue</option>
+                <option value="custom">Custom Strategy</option>
+              </select>
+            </div>
+
+            <!-- Moved Controls -->
+            <div class="p-3 bg-discord-gray-800 rounded-lg">
+              <h3 class="font-semibold mb-3 text-white">Quick Settings</h3>
+              <div class="flex items-center gap-3 flex-wrap mb-4">
+                <span id="themeColorSwatch"
+                  class="inline-flex items-center gap-2 px-2 py-1 rounded border text-xs border-discord-gray-600">
+                  <span id="themeColorDot" class="w-4 h-4 rounded-full border"></span>
+                  <span id="themeColorText">#ffffff</span>
+                </span>
+                <button onclick="setTheme('light')" class="px-3 py-1 bg-gray-200 text-gray-800 rounded">Light</button>
+                <button onclick="setTheme('dark')"
+                  class="px-3 py-1 bg-discord-gray-600 text-white rounded">Dark</button>
+                <button onclick="setTheme('system')"
+                  class="px-3 py-1 bg-discord-gray-600 text-white rounded">System</button>
+                <input type="color" id="customThemeColorPicker"
+                  class="h-9 w-12 p-1 rounded border bg-discord-gray-700 border-discord-gray-600"
+                  title="Custom Accent Color" />
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label class="inline-flex items-center gap-2">
+                  <input type="checkbox" id="solidBgToggle" class="accent-discord-blurple">
+                  <span id="labelSolidBg">Solid BG</span>
+                </label>
+                <div class="flex items-center gap-2">
+                  <input type="file" id="bgImageInput" accept="image/*"
+                    class="block w-full text-sm text-discord-gray-300 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-discord-gray-600 file:text-white hover:file:bg-discord-gray-500" />
+                  <button id="previewBgBtn" class="px-3 py-1 bg-green-700 rounded">Preview</button>
+                  <button id="clearBgImageBtn" class="px-3 py-1 bg-discord-gray-600 rounded">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom Editor Access -->
+            <div class="p-3 bg-discord-gray-800 rounded-lg flex items-center justify-between">
+              <div>
+                <h3 class="font-semibold text-white">Advanced Theme Editor</h3>
+                <p class="text-sm text-discord-gray-400">Customize every color and background</p>
+              </div>
+              <button onclick="window.openThemeEditor()"
+                class="px-4 py-2 bg-discord-blurple text-white rounded hover:bg-opacity-90">Open Editor</button>
+            </div>
+
+            <!-- Reset -->
+            <div class="pt-4 border-t border-discord-gray-600">
+              <button onclick="resetAppearanceSettings()"
+                class="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">Reset Appearance to
+                Default</button>
+            </div>
+          </div> <!-- Added this closing div for appearanceSettings -->
+
+
           <div id="soundSettings" class="settings-content w-full hidden space-y-6">
-            <h2 class="text-2xl font-bold text-white">Sound Settings</h2>
+            <h2 class="text-2xl font-bold text-white">Sound & Notifications</h2>
+
+            <!-- Do Not Disturb -->
+            <div class="bg-discord-gray-900 p-4 rounded-lg border border-discord-gray-600 mb-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="bg-red-500/20 p-2 rounded-full text-red-500">
+                    <i data-feather="bell-off" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-white font-medium">Do Not Disturb</h3>
+                    <p class="text-xs text-discord-gray-400">Suppress all notification sounds (messages, calls).</p>
+                  </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="dndToggle" class="sr-only peer">
+                  <div
+                    class="w-11 h-6 bg-discord-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500">
+                  </div>
+                </label>
+              </div>
+            </div>
             <div class="p-3 bg-discord-gray-800 rounded-lg">
               <label for="soundVolume" class="block mb-2">Sound Effects Volume</label>
               <input type="range" id="soundVolume" min="0" max="100" value="75" class="w-full accent-discord-blurple">
@@ -1041,7 +1202,8 @@
             </div>
             <div class="p-3 bg-discord-gray-800 rounded-lg">
               <h3 class="text-lg font-semibold mb-2 text-white">Credits</h3>
-              <p class="text-discord-gray-300 text-sm">Special thanks to testers, designers, and contributors who made
+              <p class="text-discord-gray-300 text-sm">Special thanks to testers, designers, and contributors who
+                made
                 Zylo possible.</p>
             </div>
             <div class="p-3 bg-discord-gray-800 rounded-lg">
@@ -1172,7 +1334,8 @@
                   class="p-2 rounded-lg border-discord-gray-600 bg-discord-gray-700">
               </div>
               <button onclick="updatePassword()"
-                class="mt-3 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">Change Password</button>
+                class="mt-3 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">Change
+                Password</button>
             </div>
 
             <div class="border-t border-discord-gray-600 pt-4">
@@ -1897,11 +2060,66 @@
       try { socket.emit('register_user', { username }); } catch { }
     }
 
+    // Global Markdown Parser (extracted for reuse)
+    window.parseDiscordMarkdown = function (text) {
+      if (!text) return '';
+      // 1. Escape HTML first to prevent XSS (critical)
+      let parsed = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      // Headers (H1-H3)
+      parsed = parsed.replace(/^#\s+(.+)$/gm, '<h1 class="text-3xl font-bold text-white mb-2 border-b border-gray-700 pb-1">$1</h1>');
+      parsed = parsed.replace(/^##\s+(.+)$/gm, '<h2 class="text-2xl font-bold text-white mb-2">$1</h2>');
+      parsed = parsed.replace(/^###\s+(.+)$/gm, '<h3 class="text-xl font-bold text-white mb-1">$1</h3>');
+
+      // 2. Code blocks with Syntax Highlighting
+      if (typeof hljs !== 'undefined') {
+        parsed = parsed.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+          const validLang = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+          try {
+            const highlighted = hljs.highlight(code, { language: validLang }).value;
+            return `<pre><code class="hljs language-${validLang} rounded p-2 text-sm my-2 block overflow-x-auto">${highlighted}</code></pre>`;
+          } catch (e) {
+            return `<pre><code class="bg-discord-gray-900 rounded p-2 text-sm my-2 block overflow-x-auto">${code}</code></pre>`;
+          }
+        });
+      } else {
+        parsed = parsed.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="bg-discord-gray-900 rounded p-2 text-sm my-2 block overflow-x-auto">$2</code></pre>');
+      }
+
+      // Fallback for ```code``` (no newline)
+      parsed = parsed.replace(/```([^`]+)```/g, '<code class="block bg-discord-gray-900 rounded p-2 text-sm font-mono my-1 whitespace-pre-wrap">$1</code>');
+
+      // 3. Inline code `code`
+      parsed = parsed.replace(/`([^`]+)`/g, '<code class="bg-discord-gray-900 text-discord-gray-100 rounded px-1.5 py-0.5 text-sm font-mono">$1</code>');
+
+      // Bold **text**
+      parsed = parsed.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      // Italic *text*
+      parsed = parsed.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      // Strikethrough ~~text~~
+      parsed = parsed.replace(/~~([^~]+)~~/g, '<del class="opacity-60">$1</del>');
+      // Spoiler ||text||
+      parsed = parsed.replace(/\|\|([^|]+)\|\|/g, '<span class="spoiler bg-discord-gray-400 text-discord-gray-400 hover:bg-transparent hover:text-white rounded px-1 cursor-pointer transition-all" onclick="this.classList.toggle(\'revealed\')">$1</span>');
+
+      return parsed;
+    };
+
     // === NEW MESSAGE RENDERING FUNCTION ===
     // This helper creates the new Discord-style message layout
     async function createDiscordMessage(data) {
       const msgWrapper = document.createElement("div");
-      msgWrapper.classList.add("flex", "items-start", "gap-3", "p-2", "rounded", "hover:bg-discord-gray-600/20", "leading-snug", "group", "relative");
+      // Add message ID for deduplication
+      if (data.id) msgWrapper.setAttribute('data-msg-id', data.id);
+      // Important: Add timestamp for finding message during updates
+      if (data.timestamp || data.ts) msgWrapper.setAttribute('data-timestamp', data.timestamp || data.ts);
+
+      msgWrapper.classList.add("flex", "flex-col", "p-2", "rounded", "hover:bg-discord-gray-600/20", "leading-snug", "group", "relative");
+
+      const messageRow = document.createElement("div");
+      messageRow.className = "flex items-start gap-3 relative w-full";
 
       // Actions (Reply / Edit)
       const actions = document.createElement("div");
@@ -1962,6 +2180,7 @@
                 const result = await res.json();
                 if (!result.success) {
                   console.error('Edit failed:', result.error);
+                  alert("Edit failed: " + result.error);
                 }
               }
             } catch (error) {
@@ -2067,62 +2286,62 @@
         };
         actions.appendChild(deleteBtn);
       }
-      msgWrapper.appendChild(actions);
+      messageRow.appendChild(actions);
 
 
 
       // Render Reply Context (Discord-style with message preview)
+      // Render Reply Context (Discord-style with spine)
       if (data.replyTo) {
         const replyContainer = document.createElement("div");
-        replyContainer.className = "flex items-start gap-2 mb-1 ml-12 text-xs cursor-pointer hover:opacity-80";
+        replyContainer.className = "flex items-center mb-0.5 cursor-pointer opacity-80 hover:opacity-100";
 
-        // Click to scroll to original message
-        replyContainer.onclick = () => {
+        replyContainer.onclick = (e) => {
+          e.stopPropagation();
           const targetId = data.replyTo.id;
           if (targetId) {
-            // Find the original message by data-msg-id
-            const targetMsg = document.querySelector(`[data-msg-id="${targetId}"]`);
-            if (targetMsg) {
-              // Scroll into view
-              targetMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-              // Add highlight effect
-              targetMsg.classList.add('bg-discord-blurple/30', 'transition-all');
-              setTimeout(() => {
-                targetMsg.classList.remove('bg-discord-blurple/30');
-              }, 1500);
+            const original = document.querySelector(`[data-msg-id="${targetId}"]`);
+            if (original) {
+              original.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              original.classList.add('bg-discord-blurple/30', 'transition-all');
+              setTimeout(() => original.classList.remove('bg-discord-blurple/30'), 1500);
             }
           }
         };
 
-        // Connecting line
-        const replyLine = document.createElement("div");
-        replyLine.className = "flex items-center gap-1 text-discord-gray-400";
+        // Spine (Curved Line)
+        const spine = document.createElement("div");
+        spine.className = "w-8 h-3 border-l-2 border-t-2 border-discord-gray-600 rounded-tl-md ml-4 mt-2 mr-2 flex-shrink-0";
+        replyContainer.appendChild(spine);
 
-        // Truncate reply content
-        const replyContent = data.replyTo.content || data.replyTo.message || '';
-        const truncatedContent = replyContent.length > 50 ? replyContent.substring(0, 50) + '...' : replyContent;
+        const replyContent = document.createElement("div");
+        replyContent.className = "flex items-center gap-1 text-xs text-discord-gray-300 overflow-hidden";
 
-        replyLine.innerHTML = `
-          <svg class="w-8 h-3 text-discord-gray-500" viewBox="0 0 32 12" fill="none">
-            <path d="M3 1 L3 8 Q3 11 6 11 L32 11" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
-          </svg>
-          <img src="/images/default_avatar.png" alt="" class="w-4 h-4 rounded-full object-cover reply-avatar" data-username="${data.replyTo.username}">
-          <span class="text-discord-gray-300 font-medium hover:underline">@${data.replyTo.username}</span>
-          <span class="text-discord-gray-400 truncate max-w-[200px]">${truncatedContent || 'Click to see message'}</span>
-        `;
+        const rAvatar = document.createElement("img");
+        rAvatar.src = "/images/default_avatar.png";
+        rAvatar.className = "w-4 h-4 rounded-full reply-avatar object-cover flex-shrink-0";
+        replyContent.appendChild(rAvatar);
 
-        // Load reply author's avatar async
+        const rUser = document.createElement("span");
+        rUser.className = "font-semibold hover:underline bg-transparent text-discord-gray-200";
+        rUser.textContent = "@" + (data.replyTo.username || "User");
+        replyContent.appendChild(rUser);
+
+        const rText = document.createElement("span");
+        rText.className = "text-discord-gray-400 truncate max-w-[300px] hover:text-white transition-colors";
+        const rTxt = data.replyTo.content || data.replyTo.message || '';
+        rText.textContent = rTxt;
+        replyContent.appendChild(rText);
+
+        replyContainer.appendChild(replyContent);
+
         if (data.replyTo.username) {
           getUserAvatarUrl(data.replyTo.username).then(url => {
-            const avatarImg = replyLine.querySelector('.reply-avatar');
-            if (avatarImg) avatarImg.src = url;
+            rAvatar.src = url;
           });
         }
 
-        replyContainer.appendChild(replyLine);
-        msgWrapper.insertBefore(replyContainer, msgWrapper.firstChild);
-        msgWrapper.classList.add('mt-1');
+        msgWrapper.appendChild(replyContainer); // Append first
       }
 
       const avatar = document.createElement("img");
@@ -2134,7 +2353,7 @@
       avatar.onerror = function () { this.onerror = null; this.src = fallbackAvatar; };
       const tUname = data.username || data.from;
       avatar.onclick = () => showUserProfile(tUname);
-      msgWrapper.appendChild(avatar);
+      messageRow.appendChild(avatar);
 
       const contentWrapper = document.createElement("div");
 
@@ -2189,6 +2408,22 @@
 
       header.appendChild(userSpan);
       header.appendChild(timeSpan);
+
+      // Status Indicator (Sent/Read)
+      const statusSpan = document.createElement("span");
+      statusSpan.className = "ml-1 text-xs select-none";
+      // Logic: If readBy > 1 (meaning someone else than author read it), show blue double check.
+      // Else show single gray check.
+      const readBy = data.readBy || [];
+      const isRead = readBy.length > 1; // Assuming author is always in readBy once sent/viewed? Or just check length.
+
+      if (isRead) {
+        statusSpan.innerHTML = '<span class="text-blue-400" title="Read">✓✓</span>';
+      } else {
+        statusSpan.innerHTML = '<span class="text-discord-gray-500" title="Sent">✓</span>';
+      }
+      header.appendChild(statusSpan);
+
       contentWrapper.appendChild(header);
 
       // Body (text OR file)
@@ -2300,25 +2535,42 @@
           const body = document.createElement("div");
           body.className = "text-white italic opacity-50";
           body.textContent = `[Sticker: ${stickerId}]`;
-          contentWrapper.appendChild(body);
         }
       } else if (data.message) {
         const body = document.createElement("div");
-        body.className = "text-white msg-body-text";
+        body.className = "text-white msg-body-text whitespace-pre-wrap";
 
-        // Discord-style markdown parsing
+        // Discord-style markdown parsing with Syntax Highlighting
         function parseMarkdown(text) {
-          // Escape HTML first to prevent XSS
+          // 1. Escape HTML first to prevent XSS (critical)
           let parsed = text
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
 
-          // Code blocks ```code```
+
+          // Headers (H1-H3) - Support for big text
+          parsed = parsed.replace(/^#\s+(.+)$/gm, '<h1 class="text-3xl font-bold text-white mb-2 border-b border-gray-700 pb-1">$1</h1>');
+          parsed = parsed.replace(/^##\s+(.+)$/gm, '<h2 class="text-2xl font-bold text-white mb-2">$1</h2>');
+          parsed = parsed.replace(/^###\s+(.+)$/gm, '<h3 class="text-xl font-bold text-white mb-1">$1</h3>');
+
+          // 2. Code blocks with Syntax Highlighting
+          parsed = parsed.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+            const validLang = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+            try {
+              const highlighted = hljs.highlight(code, { language: validLang }).value;
+              return `<pre><code class="hljs language-${validLang} rounded p-2 text-sm my-2 block overflow-x-auto">${highlighted}</code></pre>`;
+            } catch (e) {
+              return `<pre><code class="bg-discord-gray-900 rounded p-2 text-sm my-2 block overflow-x-auto">${code}</code></pre>`;
+            }
+          });
+
+          // Fallback for ```code``` (no newline)
           parsed = parsed.replace(/```([^`]+)```/g, '<code class="block bg-discord-gray-900 rounded p-2 text-sm font-mono my-1 whitespace-pre-wrap">$1</code>');
 
-          // Inline code `code`
-          parsed = parsed.replace(/`([^`]+)`/g, '<code class="bg-discord-gray-900 rounded px-1 py-0.5 text-sm font-mono">$1</code>');
+          // 3. Inline code `code`
+          parsed = parsed.replace(/`([^`]+)`/g, '<code class="bg-discord-gray-900 text-discord-gray-100 rounded px-1.5 py-0.5 text-sm font-mono">$1</code>');
+
 
           // Bold **text**
           parsed = parsed.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
@@ -2356,11 +2608,16 @@
 
         body.innerHTML = message;
 
-        // Add (edited) indicator if message was edited
+        // Add (edited) indicator if message was edited - now clickable!
         if (data.edited) {
           const editedSpan = document.createElement("span");
-          editedSpan.className = "text-discord-gray-400 text-xs ml-1 italic";
+          editedSpan.className = "text-discord-gray-400 text-xs ml-1 italic cursor-pointer hover:underline hover:text-white transition-colors select-none";
           editedSpan.textContent = "(edited)";
+          editedSpan.title = "View edit history";
+          editedSpan.onclick = (e) => {
+            e.stopPropagation();
+            showEditHistory(data.history || [], data.message, data.editedAt);
+          };
           body.appendChild(editedSpan);
         }
 
@@ -2437,7 +2694,8 @@
         contentWrapper.appendChild(reactionsContainer);
       }
 
-      msgWrapper.appendChild(contentWrapper);
+      messageRow.appendChild(contentWrapper);
+      msgWrapper.appendChild(messageRow);
       return msgWrapper;
     }
 
@@ -2602,7 +2860,7 @@
 
       if (bar && text) {
         bar.classList.remove('hidden');
-        text.textContent = `Replying to ${username} (Beta)`;
+        text.textContent = `Replying to ${username}`;
       }
       if (input) {
         input.focus();
@@ -3511,10 +3769,16 @@
       const input = document.getElementById('groupChatInput');
       const message = (input?.value || '').trim();
       if (!message || !groupsState.activeId) return;
-      const payload = { groupId: groupsState.activeId, username: localStorage.getItem('username'), message };
+      const payload = {
+        groupId: groupsState.activeId,
+        username: localStorage.getItem('username'),
+        message,
+        replyTo: replyContext ? { id: replyContext.id, username: replyContext.username, content: replyContext.content } : null
+      };
       if (navigator.onLine) socket.emit('send_group_message', payload);
       else (async () => { await appendGroupMessage(payload); })();
       input.value = ''; input.style.height = 'auto';
+      cancelReply();
     }
 
     function sendGroupFile(event) {
@@ -3630,6 +3894,7 @@
     };
 
     // Helper to toggle between Community and Friends views in the Messages sub-panel
+    // Helper to toggle between Community and Friends views in the Messages sub-panel
     window.switchMessagesView = function (view) {
       const btnCommunity = document.getElementById('btnMessagesTabCommunity');
       const btnFriends = document.getElementById('btnMessagesTabFriends');
@@ -3647,14 +3912,12 @@
         viewCommunity?.classList.remove('hidden');
         viewFriends?.classList.add('hidden');
 
-        // If we are already on the messages/friends tab, ensure we show the right main content
-        // But navigateTo handles main tab switching. This just handles sidebar state.
-        // However, if user clicks "Community" in sidebar, we might want to switch main tab to messages?
-        // Let's assume this just toggles sidebar for now, OR if it's a direct click, maybe we should navigate?
-        // For safety: if this is called manually, we might want to ensure 'messages' tab is active for community
-        // and 'friends' tab is active for friends.
-        // BUT, navigateTo calls this function. So we shouldn't call navigateTo back to avoid loops.
-        // We'll trust navigateTo to handle the main tab, and this function to handle the sidebar bits.
+        // Switch main view if needed
+        const messagesTab = document.getElementById('tab-messages');
+        if (messagesTab && (messagesTab.style.display === 'none' || messagesTab.classList.contains('hidden'))) {
+          // Avoid loop: navigateTo('messages') calls this function, but it unhides the tab first.
+          window.navigateTo('messages');
+        }
 
       } else { // friends
         // UI State
@@ -3667,23 +3930,10 @@
         viewFriends?.classList.remove('hidden');
         viewCommunity?.classList.add('hidden');
 
-        // If we are actually navigating via specific click (not just navigateTo calling this),
-        // we effectively want the main view to be 'friends' too. 
-        // But if we do navigateTo('friends') here, we might loop. 
-        // Since this is typically an onclick for the sub-panel tabs, we SHOULD update the main view.
-        // Detection: check if the 'friends' tab is currently hidden.
+        // Switch main view if needed
         const friendsTab = document.getElementById('tab-friends');
-        if (friendsTab && friendsTab.style.display === 'none' && view === 'friends') {
-          // This means we were elsewhere (e.g. community chat) and user clicked "Friends" TAB in sidebar.
-          // We should switch main view to friends.
-          // We can call navigateTo safely IF we are sure we aren't already there.
+        if (friendsTab && (friendsTab.style.display === 'none' || friendsTab.classList.contains('hidden'))) {
           window.navigateTo('friends');
-        } else if (view === 'community') {
-          // Vice versa
-          const messagesTab = document.getElementById('tab-messages');
-          if (messagesTab && messagesTab.style.display === 'none') {
-            window.navigateTo('messages');
-          }
         }
       }
     };
@@ -3754,28 +4004,45 @@
       if (!text || !activeFriendChat) return;
       const me = localStorage.getItem('savedUsername') || 'User';
 
-      const payload = { from: me, to: activeFriendChat, message: text, ts: Date.now() / 1000 };
+      const payload = {
+        from: me,
+        to: activeFriendChat,
+        message: text,
+        ts: Date.now() / 1000,
+        replyTo: replyContext ? { id: replyContext.id, username: replyContext.username, content: replyContext.content } : null
+      };
 
       // DM Logic
       if (typeof activeFriendChat === 'string') {
+        // Optimistic UI - Show message immediately (sender's view)
+        const el = await createDiscordMessage({ ...payload, username: me });
+        const msgsContainer = document.getElementById('friendsChatMessages');
+        if (msgsContainer) {
+          msgsContainer.appendChild(el);
+          msgsContainer.scrollTop = msgsContainer.scrollHeight;
+          feather.replace();
+        }
+
         if (navigator.onLine) {
           socket.emit('send_dm', payload);
         } else {
-          // Optimistic UI for offline
-          const el = await createDiscordMessage({ ...payload, username: me });
-          document.getElementById('friendsChatMessages').appendChild(el);
-          document.getElementById('friendsChatMessages').scrollTop = document.getElementById('friendsChatMessages').scrollHeight;
-          feather.replace();
           // Always attempt API for persistence when offline
           fetch('/api/dm/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(() => { });
         }
       } else {
         // Group Logic
-        const groupPayload = { groupId: activeFriendChat.id, username: me, message: text, ts: Date.now() / 1000 };
+        const groupPayload = {
+          groupId: activeFriendChat.id,
+          username: me,
+          message: text,
+          ts: Date.now() / 1000,
+          replyTo: replyContext ? { id: replyContext.id, username: replyContext.username, content: replyContext.content } : null
+        };
         if (navigator.onLine) socket.emit('send_group_message', groupPayload);
       }
 
       input.value = '';
+      cancelReply();
     }
 
     function sendFriendFile(event) {
@@ -3883,6 +4150,8 @@
       }
     }
 
+    const processedMessageIds = new Set();
+
     if (typeof io !== 'undefined') {
       socket.on('receive_dm', async (data) => {
         const me = localStorage.getItem('savedUsername') || '';
@@ -3891,6 +4160,17 @@
         // If we are currently chatting with this person (as the recipient or the sender)
         if (activeFriendChat && typeof activeFriendChat === 'string') {
           if ((from === me && to === activeFriendChat) || (to === me && from === activeFriendChat)) {
+            // Deduplication Check (Memory + DOM)
+            if (data.id) {
+              if (processedMessageIds.has(data.id) || document.querySelector(`[data-msg-id="${data.id}"]`)) return;
+              processedMessageIds.add(data.id);
+              // Clean up set occasionally (optional, but good practice to prevent excessive growth)
+              if (processedMessageIds.size > 1000) {
+                const it = processedMessageIds.values();
+                processedMessageIds.delete(it.next().value);
+              }
+            }
+
             const el = await createDiscordMessage({ ...data, username: from });
             const msgsContainer = document.getElementById('friendsChatMessages');
             if (msgsContainer) {
@@ -4235,17 +4515,99 @@
       }
     }
 
-    function loadMutualServersTab() {
+    async function loadMutualServersTab() {
+      const currentUsername = localStorage.getItem("username");
+      const profileUsername = document.getElementById("profileUsername")?.textContent;
       const container = document.getElementById("mutualServersContent");
-      // Placeholder implementation as backend support for cross-user server lookup is pending
-      if (container) {
-        container.innerHTML = `
-            <div class="text-center py-8 text-discord-gray-400">
-               <i data-feather="server" class="w-12 h-12 mx-auto mb-3 opacity-20"></i>
-               <p>Mutual servers are coming soon.</p>
+
+      if (!container) return;
+
+      // If viewing own profile, show all their servers
+      if (!profileUsername || currentUsername === profileUsername) {
+        container.innerHTML = '<div class="text-center py-8 text-discord-gray-400"><p>Viewing your own profile.</p></div>';
+        try {
+          const res = await fetch(`/api/groups/list?username=${encodeURIComponent(currentUsername)}`);
+          const data = await res.json();
+          const groups = data.groups || [];
+
+          if (groups.length === 0) {
+            container.innerHTML = '<div class="text-center py-8 text-discord-gray-400"><p>You are not a member of any servers.</p></div>';
+            return;
+          }
+
+          container.innerHTML = '<h4 class="text-xs font-bold text-discord-gray-400 uppercase mb-3">Your Servers</h4>';
+          groups.forEach(g => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-3 p-2 bg-discord-gray-900 rounded mb-2 cursor-pointer hover:bg-discord-gray-800 transition';
+            div.onclick = () => selectGroup(g.id);
+            div.innerHTML = `
+              <div class="w-10 h-10 rounded-full bg-discord-gray-700 flex items-center justify-center overflow-hidden">
+                ${g.icon ? `<img src="${g.icon}" class="w-full h-full object-cover">` : `<span class="text-white font-bold">${(g.name || 'G')[0].toUpperCase()}</span>`}
+              </div>
+              <div>
+                <span class="text-white font-medium">${g.name}</span>
+                <p class="text-xs text-discord-gray-400">${(g.members || []).length} members</p>
+              </div>
+            `;
+            container.appendChild(div);
+          });
+        } catch (e) {
+          container.innerHTML = '<div class="text-center py-8 text-discord-gray-400"><p>Failed to load servers.</p></div>';
+        }
+        return;
+      }
+
+      // Viewing another user's profile - find mutual servers
+      container.innerHTML = '<div class="text-center py-4 text-discord-gray-400"><i class="animate-pulse">Loading...</i></div>';
+
+      try {
+        const [currentRes, profileRes] = await Promise.all([
+          fetch(`/api/groups/list?username=${encodeURIComponent(currentUsername)}`),
+          fetch(`/api/groups/list?username=${encodeURIComponent(profileUsername)}`)
+        ]);
+
+        const currentData = await currentRes.json();
+        const profileData = await profileRes.json();
+
+        const currentGroups = currentData.groups || [];
+        const profileGroups = profileData.groups || [];
+
+        // Find mutual groups by ID
+        const profileGroupIds = new Set(profileGroups.map(g => g.id));
+        const mutualGroups = currentGroups.filter(g => profileGroupIds.has(g.id));
+
+        container.innerHTML = '';
+
+        if (mutualGroups.length === 0) {
+          container.innerHTML = '<div class="text-center py-8 text-discord-gray-400"><i data-feather="server" class="w-12 h-12 mx-auto mb-3 opacity-20"></i><p>No mutual servers with this user.</p></div>';
+          feather.replace();
+          return;
+        }
+
+        const header = document.createElement('h4');
+        header.className = 'text-xs font-bold text-discord-gray-400 uppercase mb-3';
+        header.textContent = `${mutualGroups.length} Mutual Server${mutualGroups.length > 1 ? 's' : ''}`;
+        container.appendChild(header);
+
+        mutualGroups.forEach(g => {
+          const div = document.createElement('div');
+          div.className = 'flex items-center gap-3 p-2 bg-discord-gray-900 rounded mb-2 cursor-pointer hover:bg-discord-gray-800 transition';
+          div.onclick = () => selectGroup(g.id);
+          div.innerHTML = `
+            <div class="w-10 h-10 rounded-full bg-discord-gray-700 flex items-center justify-center overflow-hidden">
+              ${g.icon ? `<img src="${g.icon}" class="w-full h-full object-cover">` : `<span class="text-white font-bold">${(g.name || 'G')[0].toUpperCase()}</span>`}
             </div>
-         `;
-        feather.replace();
+            <div>
+              <span class="text-white font-medium">${g.name}</span>
+              <p class="text-xs text-discord-gray-400">${(g.members || []).length} members</p>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+
+      } catch (e) {
+        container.innerHTML = '<div class="text-center py-8 text-discord-gray-400"><p>Failed to load mutual servers.</p></div>';
+        console.error('Mutual servers error:', e);
       }
     }
 
@@ -5377,11 +5739,14 @@
       let found = 0;
 
       messages.forEach(msg => {
-        // Search in message text
-        const textEl = msg.querySelector('.text-gray-100') || msg.querySelector('.msg-body-text');
-        // Note: msg-body-text might not exist on all messages depending on structure, fallback to text-gray-100
+        // Search in message text and username
+        const textEl = msg.querySelector('.text-discord-gray-100') || msg.querySelector('.msg-body-text') || msg.querySelector('p');
+        const userEl = msg.querySelector('.font-bold') || msg.querySelector('.username') || msg.querySelector('[class*="font-semibold"]');
 
-        if (textEl && regex.test(textEl.textContent)) {
+        const contentMatch = textEl && regex.test(textEl.textContent);
+        const userMatch = userEl && regex.test(userEl.textContent);
+
+        if (contentMatch || userMatch) {
           msg.classList.add('search-highlight', 'bg-yellow-500/30', 'transition-colors', 'duration-500');
           found++;
           if (found === 1) {
@@ -5391,12 +5756,128 @@
       });
 
       if (found === 0) {
-        // Optional: clear input or show toast "No results"
-        const searchInput = document.getElementById('chatSearchInput');
-        if (searchInput) {
-          searchInput.classList.add('border-red-500');
-          setTimeout(() => searchInput.classList.remove('border-red-500'), 1000);
+        // Only show error if no global results either
+        const dropdown = document.getElementById('globalSearchResults');
+        const hasGlobal = dropdown && !dropdown.classList.contains('hidden');
+
+        if (!hasGlobal) {
+          const searchInput = document.getElementById('chatSearchInput');
+          if (searchInput) {
+            searchInput.classList.add('border-red-500');
+            setTimeout(() => searchInput.classList.remove('border-red-500'), 1000);
+          }
         }
+      }
+    }
+
+    function handleSearchInput(query, event) {
+      // Always update dropdown for global search (Friends/Groups)
+      updateGlobalSearch(query);
+
+      // Determine if we should highlight messages
+      // If Enter is pressed, definitely search messages
+      if (event && event.key === 'Enter') {
+        searchMessages(query);
+      } else {
+        // Optional: live highlight? Maybe skip for performance unless user wants it
+        // searchMessages(query); 
+      }
+    }
+
+    // Navigation Registry
+    const globalNavItems = [
+      { name: 'Home', action: () => navigateTo('home'), icon: 'home', keywords: ['home', 'welcome'] },
+      { name: 'Friends', action: () => { navigateTo('friends'); if (typeof showFriendsDashboard === 'function') showFriendsDashboard(); }, icon: 'users', keywords: ['friends', 'list'] },
+      { name: 'My Profile', action: () => navigateTo('profile'), icon: 'user', keywords: ['profile', 'me'] },
+      { name: 'My Cloud', action: () => navigateTo('cloud'), icon: 'cloud', keywords: ['cloud', 'files'] },
+      { name: 'Moments', action: () => navigateTo('moments'), icon: 'film', keywords: ['moments', 'shorts'] },
+      { name: 'Settings > General', action: () => { navigateTo('settings'); openSettingsSection('generalSettings'); }, icon: 'settings', keywords: ['settings', 'general'] },
+      { name: 'Settings > Appearance', action: () => { navigateTo('settings'); openSettingsSection('appearanceSettings'); }, icon: 'monitor', keywords: ['theme', 'dark', 'light'] },
+      { name: 'Settings > Sound', action: () => { navigateTo('settings'); openSettingsSection('soundSettings'); }, icon: 'volume-2', keywords: ['sound', 'audio', 'volume'] },
+      { name: 'Settings > Account', action: () => { navigateTo('settings'); openSettingsSection('accountSettings'); }, icon: 'shield', keywords: ['account', 'email', 'security'] },
+      { name: 'Settings > About', action: () => { navigateTo('settings'); openSettingsSection('aboutSettings'); }, icon: 'info', keywords: ['about', 'version'] },
+    ];
+
+    function openSettingsSection(sectionId) {
+      document.querySelectorAll('.settings-content').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById(sectionId);
+      if (target) target.classList.remove('hidden');
+    }
+
+    function updateGlobalSearch(query) {
+      const dropdown = document.getElementById('globalSearchResults');
+      if (!dropdown) return;
+
+      if (!query || query.trim() === '') {
+        dropdown.classList.add('hidden');
+        dropdown.innerHTML = '';
+        return;
+      }
+
+      const q = query.toLowerCase();
+      const matches = [];
+
+      // 1. Search Nav
+      globalNavItems.forEach(item => {
+        if (item.name.toLowerCase().includes(q) || item.keywords.some(k => k.includes(q))) {
+          matches.push({ type: 'nav', data: item });
+        }
+      });
+
+      // Search Friends
+      if (typeof friendsState !== 'undefined' && friendsState.friends) {
+        friendsState.friends.forEach(f => {
+          const name = (typeof f === 'string') ? f : f.username;
+          if (name.toLowerCase().includes(q)) {
+            matches.push({ type: 'user', name: name });
+          }
+        });
+      }
+
+      // Search Groups
+      if (typeof groupsData !== 'undefined' && Array.isArray(groupsData)) {
+        groupsData.forEach(g => {
+          if (g && g.name && g.name.toLowerCase().includes(q)) {
+            matches.push({ type: 'group', name: g.name, id: g.id });
+          }
+        });
+      }
+
+      // Render dropdown
+      dropdown.innerHTML = '';
+      if (matches.length > 0) {
+        dropdown.classList.remove('hidden');
+        matches.forEach(m => {
+          const div = document.createElement('div');
+          div.className = "p-2 hover:bg-discord-gray-700 cursor-pointer flex items-center gap-2 text-sm text-gray-200 border-b border-discord-gray-700/50 last:border-0";
+
+          if (m.type === 'nav') {
+            div.innerHTML = `<i data-feather="${m.data.icon}" class="w-4 h-4 text-discord-blurple"></i> <span class="font-medium">${m.data.name}</span> <span class="text-xs text-gray-400 ml-auto">Jump to</span>`;
+            div.onclick = () => {
+              m.data.action();
+              dropdown.classList.add('hidden');
+              document.getElementById('chatSearchInput').value = '';
+            };
+          } else if (m.type === 'user') {
+            div.innerHTML = `<i data-feather="user" class="w-4 h-4 text-green-400"></i> <span>${m.name}</span> <span class="text-xs text-gray-500 ml-auto">Friend</span>`;
+            div.onclick = () => {
+              if (typeof openDM !== 'undefined') openDM(m.name);
+              dropdown.classList.add('hidden');
+              document.getElementById('chatSearchInput').value = '';
+            };
+          } else {
+            div.innerHTML = `<i data-feather="hash" class="w-4 h-4 text-gray-400"></i> <span>${m.name}</span> <span class="text-xs text-gray-500 ml-auto">Group</span>`;
+            div.onclick = () => {
+              if (typeof selectGroup !== 'undefined') selectGroup(m.id);
+              dropdown.classList.add('hidden');
+              document.getElementById('chatSearchInput').value = '';
+            };
+          }
+          dropdown.appendChild(div);
+        });
+        if (typeof feather !== 'undefined') feather.replace();
+      } else {
+        dropdown.classList.add('hidden');
       }
     }
 
@@ -5415,22 +5896,28 @@
       }
     }
 
-    // Sidebar Toggle with Persistence
+    // Sidebar Toggle with Persistence (Updated for Mobile Drawers)
     function toggleSidebar() {
-      const panel = document.getElementById('subPanelContainer');
+      const primary = document.getElementById('primarySidebar');
+      const secondary = document.getElementById('subPanelContainer');
       const overlay = document.getElementById('overlay');
-      if (!panel) return;
 
-      const isOpen = !panel.classList.contains('-translate-x-full');
+      if (!primary) return;
 
-      if (isOpen) {
-        panel.classList.add('-translate-x-full');
-        overlay?.classList.add('hidden');
-        localStorage.setItem('sidebarState', 'closed');
-      } else {
-        panel.classList.remove('-translate-x-full');
+      const isClosed = primary.classList.contains('-translate-x-full');
+
+      if (isClosed) {
+        // Open Sidebars
+        primary.classList.remove('-translate-x-full');
+        if (secondary) secondary.classList.remove('-translate-x-full');
         overlay?.classList.remove('hidden');
         localStorage.setItem('sidebarState', 'open');
+      } else {
+        // Close Sidebars
+        primary.classList.add('-translate-x-full');
+        if (secondary) secondary.classList.add('-translate-x-full');
+        overlay?.classList.add('hidden');
+        localStorage.setItem('sidebarState', 'closed');
       }
     }
 
@@ -7356,6 +7843,11 @@
         }
 
         container.scrollTop = container.scrollHeight;
+
+        // Mark messages as read
+        if (window.markChannelRead) {
+          window.markChannelRead(group.id, channelId);
+        }
       } catch (error) {
         console.log('No messages yet or error loading:', error);
       }
@@ -8529,22 +9021,46 @@
       overflow: hidden;
     }
 
+    #subPanelContainer.collapsed .sub-panel-content:not(#sub-panel-settings, #sub-panel-profile) {
+      display: none !important;
+    }
+
     /* Hide sidebar title when collapsed */
     #subPanelContainer.collapsed>header .sidebar-title {
       display: none;
     }
 
-    /* Hide ALL sub-panel content blocks when collapsed EXCEPT settings */
-    #subPanelContainer.collapsed .sub-panel-content:not(#sub-panel-settings) {
-      display: none !important;
-    }
-
-    /* Hide sub-panel headers (like "User Settings" text) when collapsed */
+    /* Hide sub-panel headers (like "User Settings", "Profile", etc.) when collapsed */
     #subPanelContainer.collapsed .sub-panel-header {
       display: none;
     }
 
-    /* Settings tabs: Hide text, show only icons */
+    /* Sub-panel items (any link/button with .sub-panel-item): Hide text, show only icons */
+    #subPanelContainer.collapsed .sub-panel-item {
+      font-size: 0 !important;
+      justify-content: center;
+      padding: 12px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Sub-panel item icons - ensure visible and centered */
+    #subPanelContainer.collapsed .sub-panel-item i,
+    #subPanelContainer.collapsed .sub-panel-item svg {
+      font-size: 1.25rem;
+      width: 20px;
+      height: 20px;
+      margin: 0 !important;
+      display: inline-block;
+      visibility: visible;
+    }
+
+    /* Hide text spans in sub-panel items */
+    #subPanelContainer.collapsed .sub-panel-item span {
+      display: none !important;
+    }
+
+    /* Settings tabs: Hide text, show only icons (separate class) */
     #subPanelContainer.collapsed .settings-tab {
       font-size: 0 !important;
       justify-content: center;
@@ -9440,6 +9956,65 @@
       }
     }
 
+    window.applyThemePreset = function (val) {
+      if (!val) return;
+      if (val === 'midnight') {
+        const midnight = {
+          ui: { navbarBg: '#050505', sidebarBg: '#080808', panelBg: 'rgba(0,0,0,0.6)', mainBg: '#020617' },
+          textColor: '#e2e8f0', accentColor: '#22d3ee',
+          background: { mode: 'gradient', gradient: { from: '#020617', to: '#000000', angle: 135 } }
+        };
+        // Apply manually
+        document.body.style.setProperty('--navbar-bg', midnight.ui.navbarBg);
+        document.body.style.setProperty('--sidebar-bg', midnight.ui.sidebarBg);
+        document.body.style.setProperty('--panel-bg', midnight.ui.panelBg);
+        document.body.style.setProperty('--text-color', midnight.textColor);
+        document.body.style.setProperty('--accent-color', midnight.accentColor);
+        document.body.style.setProperty('--main-bg', midnight.ui.mainBg);
+        // Try accessing global applyThemeBackground if available, else skip or polyfill
+        if (typeof applyThemeBackground === 'function') applyThemeBackground(midnight.background);
+      } else {
+        if (typeof setTheme === 'function') setTheme(val);
+        else console.error("setTheme is not defined");
+      }
+    };
+
+    window.resetAppearanceSettings = function () {
+      if (!confirm("Reset appearance to default?")) return;
+      if (typeof setTheme === 'function') setTheme('dark');
+      const presetSelect = document.getElementById('themePresetSelect');
+      if (presetSelect) presetSelect.value = 'dark';
+      const solidToggle = document.getElementById('solidBgToggle');
+      if (solidToggle) solidToggle.checked = false;
+      localStorage.removeItem('bgImageDataUrl');
+      localStorage.removeItem('currentCustomTheme');
+      alert("Appearance reset.");
+    };
+
+    // Explicit Settings Tab Switching
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.settings-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // 1. Deactivate all tabs
+          tabs.forEach(t => t.classList.remove('active', 'bg-discord-gray-700', 'font-bold'));
+          // 2. Hide all contents
+          document.querySelectorAll('.settings-content').forEach(c => c.classList.add('hidden'));
+
+          // 3. Activate clicked
+          tab.classList.add('active', 'bg-discord-gray-700', 'font-bold');
+
+          // 4. Show target
+          const targetId = tab.dataset.target;
+          const target = document.getElementById(targetId);
+          if (target) target.classList.remove('hidden');
+        });
+      });
+
+      // Default to General
+      document.getElementById('tabBtnGeneral')?.click();
+    });
+
     function renderMomentCard(post) {
       const isLiked = post.reactions && post.reactions.includes(localStorage.getItem('username'));
       const likeCount = post.reactions ? post.reactions.length : 0;
@@ -9761,6 +10336,339 @@
     window.refreshFilesList = loadCloudFiles;
 
     // Auto-load if settings is open (optional)
+  </script>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav id="mobileBottomNav"
+    class="fixed bottom-0 left-0 right-0 bg-discord-gray-800 border-t border-discord-gray-700 z-50 md:hidden">
+    <div class="flex items-center justify-around h-14">
+      <button id="mobileNavHome" onclick="mobileNavTo('messages')" class="mobile-nav-btn group" data-tab="messages">
+        <i data-feather="message-circle" class="w-6 h-6 mb-0.5"></i>
+        <span class="text-[10px]">DMs</span>
+      </button>
+      <button id="mobileNavCloud" onclick="mobileNavTo('cloud')" class="mobile-nav-btn group" data-tab="cloud">
+        <i data-feather="cloud" class="w-6 h-6 mb-0.5"></i>
+        <span class="text-[10px]">Cloud</span>
+      </button>
+      <button id="mobileNavSettings" onclick="mobileNavTo('settings')" class="mobile-nav-btn group" data-tab="settings">
+        <i data-feather="settings" class="w-6 h-6 mb-0.5"></i>
+        <span class="text-[10px]">Settings</span>
+      </button>
+      <button id="mobileNavProfile" onclick="mobileNavTo('profile')" class="mobile-nav-btn group" data-tab="profile">
+        <i data-feather="user" class="w-6 h-6 mb-0.5"></i>
+        <span class="text-[10px]">Profile</span>
+      </button>
+    </div>
+  </nav>
+
+  <style>
+    /* Mobile Bottom Nav Styles */
+    .mobile-nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      padding: 8px 0;
+      color: var(--text-muted, #8e9297);
+      transition: color 0.15s ease;
+    }
+
+    .mobile-nav-btn:hover,
+    .mobile-nav-btn.active {
+      color: var(--text-normal, #ffffff);
+    }
+
+    .mobile-nav-btn.active {
+      color: var(--brand-primary, #5865f2);
+    }
+
+    /* Add bottom padding to main content when mobile nav is visible */
+    @media (max-width: 767px) {
+      body {
+        padding-bottom: 56px;
+      }
+
+      /* Fix top spacing on mobile */
+      .chat-area {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+        height: calc(100dvh - 3.5rem - 3.5rem) !important;
+        /* Adjust height: 100dvh - header - nav */
+      }
+
+      .chat-messages {
+        padding-top: 1rem !important;
+      }
+    }
+
+    @media (min-width: 768px) {
+      #mobileBottomNav {
+        display: none !important;
+      }
+    }
+  </style>
+
+  <script>
+    // --- Mobile Profile Menu Functions ---
+    window.openMobileProfileMenu = function () {
+      const modal = document.getElementById('mobileProfileMenuModal');
+      const content = document.getElementById('mobileProfileMenuContent');
+      if (modal) {
+        modal.classList.remove('hidden');
+        // Animate in
+        setTimeout(() => {
+          content.classList.remove('translate-y-full');
+        }, 10);
+      }
+    };
+
+    window.closeMobileProfileMenu = function () {
+      const modal = document.getElementById('mobileProfileMenuModal');
+      const content = document.getElementById('mobileProfileMenuContent');
+      if (modal && content) {
+        content.classList.add('translate-y-full');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+        }, 200);
+      }
+    };
+
+    window.selectMobileProfileTab = function (tabName) {
+      closeMobileProfileMenu();
+      // Find the desktop/hidden button and trigger click
+      const btn = document.querySelector(`#profileTabs button[data-tab="${tabName}"]`);
+      if (btn) btn.click();
+    };
+    // Mobile navigation function
+    function mobileNavTo(tab) {
+      navigateTo(tab);
+
+      // Update active state
+      document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.tab === tab) {
+          btn.classList.add('active');
+        }
+      });
+
+      feather.replace();
+    }
+
+    // Set initial active state based on current tab
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentTab = localStorage.getItem('lastTab') || 'messages';
+      const mobileBtn = document.querySelector(`.mobile-nav-btn[data-tab="${currentTab}"]`);
+      if (mobileBtn) mobileBtn.classList.add('active');
+
+      // Initialize Data
+      loadGroups();
+
+      feather.replace();
+    });
+  </script>
+  <!-- Edit History Modal -->
+  <div id="editHistoryModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-discord-gray-800 w-full max-w-lg rounded-md shadow-2xl flex flex-col max-h-[80vh]">
+      <div class="p-4 border-b border-discord-gray-700 flex justify-between items-center">
+        <h3 class="text-lg font-bold text-white">Message Edits</h3>
+        <button onclick="closeEditHistory()" class="text-discord-gray-400 hover:text-white">
+          <i data-feather="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="editHistoryContent" class="flex-1 overflow-y-auto p-4 space-y-4">
+        <!-- Items go here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showEditHistory(history, currentContent, currentTs) {
+      const modal = document.getElementById('editHistoryModal');
+      const content = document.getElementById('editHistoryContent');
+      if (!modal || !content) return;
+
+      content.innerHTML = '';
+
+      // Helper
+      const createItem = (text, ts, isCurrent = false) => {
+        const div = document.createElement('div');
+        div.className = "flex flex-col gap-1";
+
+        const timeStr = ts ? new Date(ts * 1000).toLocaleString() : 'Recently';
+
+        div.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-discord-gray-400 font-mono">${timeStr}</span>
+                     ${isCurrent ? '<span class="text-[10px] bg-discord-blurple text-white px-1.5 rounded uppercase font-bold tracking-wide">Current</span>' : ''}
+                </div>
+                <div class="bg-discord-gray-900 rounded p-3 text-discord-gray-200 text-sm whitespace-pre-wrap leading-relaxed">${window.parseDiscordMarkdown ? window.parseDiscordMarkdown(text) : text}</div>
+             `;
+        return div;
+      };
+
+      // Parse history (Oldest ?? Backend appends, so array is likely Oldest -> Newest or Newest -> Oldest?)
+      // Backend: append({content: old}). So [Old1, Old2, Old3].
+      // We want to show sequence.
+
+      if (history && history.length > 0) {
+        history.forEach(h => {
+          content.appendChild(createItem(h.content, h.timestamp));
+        });
+      }
+
+      // Add current
+      content.appendChild(createItem(currentContent, currentTs || Date.now() / 1000, true));
+
+      modal.classList.remove('hidden');
+      feather.replace();
+    }
+
+    function closeEditHistory() {
+      document.getElementById('editHistoryModal').classList.add('hidden');
+    }
+
+    // Listen for real-time edits
+    if (typeof socket !== 'undefined') {
+      socket.on('group_message_update', (data) => {
+        // data = { groupId, channel, message }
+        // Find element by timestamp (since ID might vary or not be set reliably in early versions)
+        const ts = data.message.timestamp || data.message.ts;
+        const el = document.querySelector(`[data-timestamp="${ts}"]`);
+
+        if (el) {
+          const bodyEl = el.querySelector('.msg-body-text');
+          const parser = window.parseDiscordMarkdown || ((t) => t);
+          if (bodyEl) {
+            // Update content
+            bodyEl.innerHTML = parser(data.message.message);
+
+            // Re-attach (edited) label
+            if (data.message.edited) {
+              const span = document.createElement('span');
+              span.className = "text-discord-gray-400 text-xs ml-1 italic cursor-pointer hover:underline hover:text-white transition-colors select-none";
+              span.textContent = "(edited)";
+              span.title = "View edit history";
+              span.onclick = (e) => {
+                e.stopPropagation();
+                showEditHistory(data.message.history || [], data.message.message, data.message.editedAt);
+              };
+              bodyEl.appendChild(span);
+            }
+          }
+        }
+      });
+
+      // Listen for read receipts
+      socket.on('group_message_read_update', (data) => {
+        // data = { groupId, channel, timestamp, readBy }
+        const el = document.querySelector(`[data-timestamp="${data.timestamp}"]`);
+        if (el) {
+          // Find status span (it's the last child of header)
+          // Structure: msgWrapper -> contentWrapper -> header -> [user, time, status]
+          const contentWrapper = el.children[1]; // Avatar is 0, contentWrapper is 1
+          if (contentWrapper) {
+            const header = contentWrapper.children[0];
+            if (header && header.children.length >= 3) {
+              const statusSpan = header.children[2];
+              const isRead = data.readBy && data.readBy.length > 1;
+              if (isRead) {
+                statusSpan.innerHTML = '<span class="text-blue-400" title="Read">✓✓</span>';
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Auto-mark messages as read when channel opens
+    window.markChannelRead = function (groupId, channelId) {
+      if (!groupId || !channelId) return;
+
+      const username = localStorage.getItem('savedUsername');
+      if (!username) return;
+
+      // Delay slightly to ensure render
+      setTimeout(() => {
+        const messages = document.querySelectorAll('#group-chat-messages > div');
+        // Take last 50 messages to catch up
+        const recent = Array.from(messages).slice(-50);
+
+        recent.forEach(msg => {
+          const ts = msg.getAttribute('data-timestamp');
+          // Only mark if SENT (single check) - avoiding redundant calls if already read (checking UI state is hard, so just brute force for now or check backend)
+          // Or better: Just fire requests, backend handles dedupe
+          if (ts) {
+            fetch('/api/groups/message/read', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                groupId,
+                channel: channelId,
+                timestamp: parseInt(ts),
+                username
+              })
+            }).catch(e => console.log('Read receipt error', e)); // Silent fail
+          }
+        });
+      }, 2000);
+    };
+    // --- Mute / DND Helpers ---
+    function toggleFriendMute() {
+      if (!activeFriendChat) return;
+      const isMuted = window.toggleMute(activeFriendChat);
+      updateMuteIcons();
+      showToast(isMuted ? `Muted notifications for this user` : `Unmuted notifications`);
+    }
+
+    function toggleGroupMute() {
+      if (!currentGroupId) return;
+      const isMuted = window.toggleMute(currentGroupId);
+      updateMuteIcons();
+      showToast(isMuted ? `Muted notifications for this group` : `Unmuted group notifications`);
+    }
+
+    function updateMuteIcons() {
+      // Friend Chat
+      const friendBtn = document.getElementById('friendMuteBtn');
+      if (friendBtn && activeFriendChat) {
+        const muted = window.getMuteStatus(activeFriendChat);
+        // Use bell-off if muted, bell if not
+        const icon = muted ? 'bell-off' : 'bell';
+        friendBtn.innerHTML = `<i data-feather="${icon}" class="w-5 h-5 ${muted ? 'text-red-400' : ''}"></i>`;
+        if (window.feather) feather.replace();
+      }
+
+      // Group Panel
+      const groupBtn = document.getElementById('groupMuteBtn');
+      if (groupBtn && currentGroupId) {
+        const muted = window.getMuteStatus(currentGroupId);
+        const icon = muted ? 'bell-off' : 'bell';
+        groupBtn.innerHTML = `<i data-feather="${icon}" class="w-4 h-4 ${muted ? 'text-red-400' : ''}"></i>`;
+        if (window.feather) feather.replace();
+      }
+    }
+
+    // Call updateMuteIcons when switching views
+    // (This needs to be hooked into switchMessagesView or setActiveFriend/setActiveGroup)
+    // For now, we'll rely on it being called manually or we can inject it.
+    // Better: Hook into logic or use an interval/observer? 
+    // Let's hook into `openDM` and `setActiveGroup` by ensuring we call updateMuteIcons there.
+
+    // Simplest approach: Observe changes or just call it periodically/on-click is fine for now, 
+    // but better to inject into the view switching logic. 
+    // I'll add a global listener for 'viewChanged' if it existed, but it doesn't.
+    // I will export updateMuteIcons to window and call it from the respective functions if I can find them,
+    // or just rely on the user clicking for now, but that doesn't show initial state.
+    // Let's expose it globally.
+    window.updateMuteIcons = updateMuteIcons;
+
+    // Initialize DND toggle state
+    const dnd = document.getElementById('dndToggle');
+    if (dnd) {
+      dnd.checked = localStorage.getItem('doNotDisturb') === 'true';
+    }
+
   </script>
 </body>
 

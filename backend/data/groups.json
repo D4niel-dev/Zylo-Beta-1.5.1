@@ -166,6 +166,22 @@
         "fileName": null,
         "fileType": null,
         "reactions": {}
+      },
+      {
+        "username": "Dan",
+        "message": "test.",
+        "channel": "general",
+        "timestamp": 1767089301,
+        "type": "text",
+        "sticker_src": null,
+        "fileData": null,
+        "fileName": null,
+        "fileType": null,
+        "replyTo": {
+          "id": 1767089296745,
+          "username": "Dan",
+          "content": "again"
+        }
       }
     ],
     "createdAt": 1766391858

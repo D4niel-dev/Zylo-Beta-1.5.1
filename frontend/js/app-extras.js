@@ -1,4 +1,4 @@
-(function(){
+(function () {
   // ---- Simple Sound Engine using WebAudio (with graceful fallback) ----
   const SoundEngine = {
     _ctx: null,
@@ -15,37 +15,91 @@
     _sampleBase: '/files/audio/',
     _playOn: { send: true, receive: true, ui: true },
 
-    _ensureCtx(){
+    _ensureCtx() {
       if (this._ctx) return;
       try {
         this._ctx = new (window.AudioContext || window.webkitAudioContext)();
-      } catch {}
+      } catch { }
     },
 
-    async init(){
+    // ---- Notification Logic (Mute & DND) ----
+    _mutedSources: new Set(),
+    _dnd: false,
+
+    _loadNotificationSettings() {
+      try {
+        const muted = JSON.parse(localStorage.getItem('mutedSources') || '[]');
+        this._mutedSources = new Set(muted);
+        this._dnd = localStorage.getItem('doNotDisturb') === 'true';
+      } catch (e) {
+        console.error('Failed to load notification settings', e);
+      }
+    },
+
+    isMuted(sourceId) {
+      if (this._dnd) return true; // DND overrides everything for notifications
+      if (!sourceId) return false;
+      return this._mutedSources.has(sourceId);
+    },
+
+    toggleMuteSource(sourceId) {
+      if (this._mutedSources.has(sourceId)) {
+        this._mutedSources.delete(sourceId);
+      } else {
+        this._mutedSources.add(sourceId);
+      }
+      localStorage.setItem('mutedSources', JSON.stringify([...this._mutedSources]));
+      return this._mutedSources.has(sourceId);
+    },
+
+    getMuteStatus(sourceId) {
+      return this._mutedSources.has(sourceId);
+    },
+
+    toggleDND() {
+      this._dnd = !this._dnd;
+      localStorage.setItem('doNotDisturb', String(this._dnd));
+      return this._dnd;
+    },
+
+    getDNDStatus() {
+      return this._dnd;
+    },
+
+    async init() {
       if (this._inited) return;
       this._inited = true;
       this._ensureCtx();
       // Load persisted settings
       this._enabled = localStorage.getItem('enableSound') !== 'false';
       this._muted = localStorage.getItem('muteAll') === 'true';
-      const fx = Number(localStorage.getItem('soundVolume')); if (!Number.isNaN(fx)) this._volFx = fx/100;
-      const mu = Number(localStorage.getItem('musicVolume')); if (!Number.isNaN(mu)) this._volMusic = mu/100;
+      const fx = Number(localStorage.getItem('soundVolume')); if (!Number.isNaN(fx)) this._volFx = fx / 100;
+      const mu = Number(localStorage.getItem('musicVolume')); if (!Number.isNaN(mu)) this._volMusic = mu / 100;
       this._profile = localStorage.getItem('soundProfile') || 'default';
       this._duckMusic = localStorage.getItem('duckMusic') === 'true';
       this._playOn.send = (localStorage.getItem('playSend') ?? 'true') !== 'false';
       this._playOn.receive = (localStorage.getItem('playReceive') ?? 'true') !== 'false';
       this._playOn.ui = (localStorage.getItem('playUi') ?? 'true') !== 'false';
+
+      this._loadNotificationSettings(); // Load notification prefs
+
       this._preloadSamples();
+
+      // Expose to window
+      window.SoundEngine = this;
+      window.toggleMute = (id) => this.toggleMuteSource(id);
+      window.toggleDND = () => this.toggleDND();
+      window.getMuteStatus = (id) => this.getMuteStatus(id);
+      window.getDNDStatus = () => this.getDNDStatus();
     },
 
-    setFromControls(){
+    setFromControls() {
       this._enabled = document.getElementById('enableSound')?.checked ?? this._enabled;
       this._muted = document.getElementById('muteAll')?.checked ?? this._muted;
       const fx = Number(document.getElementById('soundVolume')?.value);
-      if (!Number.isNaN(fx)) this._volFx = fx/100;
+      if (!Number.isNaN(fx)) this._volFx = fx / 100;
       const mu = Number(document.getElementById('musicVolume')?.value);
-      if (!Number.isNaN(mu)) this._volMusic = mu/100;
+      if (!Number.isNaN(mu)) this._volMusic = mu / 100;
       const prof = document.getElementById('soundProfile')?.value;
       if (prof) this._profile = prof;
       const duck = document.getElementById('duckMusic')?.checked;
@@ -56,15 +110,28 @@
       if (typeof playReceive === 'boolean') this._playOn.receive = playReceive;
       const playUi = document.getElementById('playUi')?.checked;
       if (typeof playUi === 'boolean') this._playOn.ui = playUi;
+
+      // DND Control
+      const dnd = document.getElementById('dndToggle')?.checked;
+      if (typeof dnd === 'boolean') {
+        this._dnd = dnd;
+        localStorage.setItem('doNotDisturb', String(this._dnd));
+      }
     },
 
-    play(type){
+    play(type, sourceId) {
       if (!this._enabled || this._muted) return;
       this._ensureCtx();
       if (!this._ctx) return;
       if (type === 'send' && !this._playOn.send) return;
-      if (type === 'receive' && !this._playOn.receive) return;
       if (type === 'ui' && !this._playOn.ui) return;
+
+      // Special logic for receive: check DND and specific Mute
+      if (type === 'receive') {
+        if (!this._playOn.receive) return;
+        if (this.isMuted(sourceId)) return;
+      }
+
       try {
         const buf = this._buffers[type];
         if (buf) {
@@ -113,10 +180,10 @@
           osc.stop(now + dur + 0.02);
         }
         if (this._duckMusic) this._duckMusicOnce();
-      } catch {}
+      } catch { }
     },
 
-    startMusic(){
+    startMusic() {
       if (this._muted || localStorage.getItem('enableMusic') !== 'true') return;
       this._ensureCtx();
       if (!this._ctx || this._musicNode) return;
@@ -136,7 +203,7 @@
       const bufferSize = 2 * this._ctx.sampleRate;
       const noiseBuffer = this._ctx.createBuffer(1, bufferSize, this._ctx.sampleRate);
       const output = noiseBuffer.getChannelData(0);
-      for (let i=0;i<bufferSize;i++) output[i] = (Math.random()*2 - 1) * 0.02;
+      for (let i = 0; i < bufferSize; i++) output[i] = (Math.random() * 2 - 1) * 0.02;
       const noise = this._ctx.createBufferSource();
       noise.buffer = noiseBuffer;
       noise.loop = true;
@@ -151,13 +218,13 @@
       this._musicNode = noise;
     },
 
-    stopMusic(){
-      try { this._musicNode?.stop(); } catch {}
+    stopMusic() {
+      try { this._musicNode?.stop(); } catch { }
       this._musicNode = null;
       this._musicGain = null;
     },
 
-    _duckMusicOnce(){
+    _duckMusicOnce() {
       try {
         if (!this._musicGain) return;
         const now = this._ctx.currentTime;
@@ -167,10 +234,10 @@
         g.setValueAtTime(base, now);
         g.linearRampToValueAtTime(base * 0.5, now + 0.02);
         g.linearRampToValueAtTime(base, now + 0.25);
-      } catch {}
+      } catch { }
     },
 
-    async _preloadSamples(){
+    async _preloadSamples() {
       if (!this._ctx) return;
       const files = {
         send: 'send.mp3',
@@ -190,24 +257,24 @@
           const arr = await resp.arrayBuffer();
           const buf = await this._ctx.decodeAudioData(arr.slice(0));
           this._buffers[key] = buf;
-        } catch {}
+        } catch { }
       }));
     }
   };
 
   // ---- Profile Effects ----
-  function applyAvatarEffect(effect){
+  function applyAvatarEffect(effect) {
     const avatar = document.getElementById('avatarImage');
     const wrapper = document.querySelector('.avatar-wrapper');
     if (!avatar || !wrapper) return;
     const effects = [
-      'avatar-effect-none','avatar-effect-glow','avatar-effect-pulse','avatar-effect-ring','avatar-effect-sparkle',
-      'avatar-effect-vintage','avatar-effect-neon-border','avatar-effect-gradient-border','avatar-effect-frosted',
-      'avatar-effect-holographic','avatar-effect-matrix','avatar-effect-cyberpunk'
+      'avatar-effect-none', 'avatar-effect-glow', 'avatar-effect-pulse', 'avatar-effect-ring', 'avatar-effect-sparkle',
+      'avatar-effect-vintage', 'avatar-effect-neon-border', 'avatar-effect-gradient-border', 'avatar-effect-frosted',
+      'avatar-effect-holographic', 'avatar-effect-matrix', 'avatar-effect-cyberpunk'
     ];
     avatar.classList.remove(...effects);
     wrapper.classList.remove(...effects);
-    switch(effect){
+    switch (effect) {
       case 'glow':
         avatar.classList.add('avatar-effect-glow'); break;
       case 'pulse':
@@ -235,16 +302,16 @@
     }
   }
 
-  function applyBannerEffect(effect){
+  function applyBannerEffect(effect) {
     const banner = document.querySelector('.profile-banner');
     if (!banner) return;
     const effects = [
-      'banner-effect-none','banner-effect-blur-overlay','banner-effect-gradient-overlay','banner-effect-vignette',
-      'banner-effect-neon-glow','banner-effect-cyber-grid','banner-effect-holographic-banner','banner-effect-matrix-banner',
-      'banner-effect-retro-wave','banner-effect-neon-city'
+      'banner-effect-none', 'banner-effect-blur-overlay', 'banner-effect-gradient-overlay', 'banner-effect-vignette',
+      'banner-effect-neon-glow', 'banner-effect-cyber-grid', 'banner-effect-holographic-banner', 'banner-effect-matrix-banner',
+      'banner-effect-retro-wave', 'banner-effect-neon-city'
     ];
     banner.classList.remove(...effects);
-    switch(effect){
+    switch (effect) {
       case 'blur-overlay':
         banner.classList.add('banner-effect-blur-overlay'); break;
       case 'gradient-overlay':
@@ -268,20 +335,20 @@
     }
   }
 
-  function initProfileEffects(){
+  function initProfileEffects() {
     const select = document.getElementById('profileEffectSelect');
     const bannerSelect = document.getElementById('bannerEffectSelect');
     const saved = localStorage.getItem('profileEffect') || 'none';
     const bannerSaved = localStorage.getItem('bannerEffect') || 'none';
-    
+
     if (select) select.value = saved;
     if (bannerSelect) bannerSelect.value = bannerSaved;
-    
+
     applyAvatarEffect(saved);
     applyBannerEffect(bannerSaved);
-    
+
     if (select) {
-      select.addEventListener('change', function(){
+      select.addEventListener('change', function () {
         const val = this.value;
         localStorage.setItem('profileEffect', val);
         if (typeof persistSettings === 'function') {
@@ -291,9 +358,9 @@
         SoundEngine.play('ui');
       });
     }
-    
+
     if (bannerSelect) {
-      bannerSelect.addEventListener('change', function(){
+      bannerSelect.addEventListener('change', function () {
         const val = this.value;
         localStorage.setItem('bannerEffect', val);
         if (typeof persistSettings === 'function') {
@@ -306,13 +373,13 @@
   }
 
   // ---- Icon fill on active (post-feather replace safety) ----
-  function applyActiveIconFill(){
+  function applyActiveIconFill() {
     // Nothing required here; CSS handles it. But ensure feather ran.
-    try { if (window.feather) feather.replace(); } catch {}
+    try { if (window.feather) feather.replace(); } catch { }
   }
 
   // ---- Wire up events ----
-  function wireEvents(){
+  function wireEvents() {
     // Ensure sound engine gets initialized on first interaction
     const activateAudio = () => {
       SoundEngine.init();
@@ -349,12 +416,21 @@
       const s = window.socket;
       if (!s || s.__zyloSoundPatched) return;
       try {
-        s.on('receive_message', () => SoundEngine.play('receive'));
-        s.on('receive_group_message', () => SoundEngine.play('receive'));
-        s.on('receive_file', () => SoundEngine.play('receive'));
-        s.on('receive_dm', () => SoundEngine.play('receive'));
+        s.on('receive_message', () => SoundEngine.play('receive', 'community'));
+        s.on('receive_group_message', (data) => {
+          if (data && data.groupId) SoundEngine.play('receive', data.groupId);
+          else SoundEngine.play('receive');
+        });
+        s.on('receive_file', (data) => {
+          if (data && data.groupId) SoundEngine.play('receive', data.groupId);
+          else SoundEngine.play('receive', 'community');
+        });
+        s.on('receive_dm', (data) => {
+          if (data && data.from) SoundEngine.play('receive', data.from);
+          else SoundEngine.play('receive');
+        });
         s.__zyloSoundPatched = true;
-      } catch {}
+      } catch { }
     };
     tryAttachSocket();
     // Re-try a few times in case socket is late
@@ -362,11 +438,11 @@
     const iv = setInterval(() => { attempts++; tryAttachSocket(); if (attempts > 10) clearInterval(iv); }, 500);
 
     // React to settings controls changing at runtime
-    ['soundVolume','musicVolume','muteAll','enableSound','enableMusic','soundProfile','duckMusic','playSend','playReceive','playUi'].forEach(id => {
+    ['soundVolume', 'musicVolume', 'muteAll', 'enableSound', 'enableMusic', 'soundProfile', 'duckMusic', 'playSend', 'playReceive', 'playUi', 'dndToggle'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('change', () => {
         SoundEngine.setFromControls();
-        if (id === 'enableMusic' || id === 'musicVolume' || id === 'muteAll'){
+        if (id === 'enableMusic' || id === 'musicVolume' || id === 'muteAll') {
           SoundEngine.stopMusic();
           SoundEngine.startMusic();
         }
@@ -374,7 +450,7 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded', function(){
+  document.addEventListener('DOMContentLoaded', function () {
     initProfileEffects();
     wireEvents();
     applyActiveIconFill();

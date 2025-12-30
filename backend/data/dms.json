@@ -70,5 +70,84 @@
     "fileType": null,
     "fileData": null,
     "createdAt": 1767007234
+  },
+  {
+    "from": "Daniel",
+    "to": "Dan",
+    "message": "## test",
+    "fileName": null,
+    "fileType": null,
+    "fileData": null,
+    "createdAt": 1767078949
+  },
+  {
+    "from": "Daniel",
+    "to": "Dan",
+    "message": "# test",
+    "fileName": null,
+    "fileType": null,
+    "fileData": null,
+    "createdAt": 1767078961
+  },
+  {
+    "from": "Daniel",
+    "to": "Dan",
+    "message": "### test",
+    "fileName": null,
+    "fileType": null,
+    "fileData": null,
+    "createdAt": 1767079279
+  },
+  {
+    "from": "Daniel",
+    "to": "Dan",
+    "message": "test",
+    "fileName": null,
+    "fileType": null,
+    "fileData": null,
+    "createdAt": 1767080154
+  },
+  {
+    "from": "Daniel",
+    "to": "Dan",
+    "message": "# test",
+    "fileName": null,
+    "fileType": null,
+    "fileData": null,
+    "createdAt": 1767080159
+  },
+  {
+    "from": "Daniel",
+    "to": "Dan",
+    "message": "hm",
+    "fileName": null,
+    "fileType": null,
+    "fileData": null,
+    "replyTo": {
+      "id": 1767087361698,
+      "username": "Daniel",
+      "content": "test"
+    },
+    "createdAt": 1767087365
+  },
+  {
+    "from": "Dan",
+    "to": "Daniel",
+    "message": "```python\nprint(\"Hello World!\")\n```",
+    "fileName": null,
+    "fileType": null,
+    "fileData": null,
+    "replyTo": null,
+    "createdAt": 1767091414
+  },
+  {
+    "from": "Dan",
+    "to": "Daniel",
+    "message": "hi",
+    "fileName": null,
+    "fileType": null,
+    "fileData": null,
+    "replyTo": null,
+    "createdAt": 1767093763
   }
 ]
