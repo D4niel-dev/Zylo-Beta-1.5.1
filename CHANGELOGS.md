@@ -1,7 +1,6 @@
 # *Zylo Changelogs* 🛠
 > *This is where all the changes are announced/archive for future official release of the app.*
 
----
 
 ## **Zylo-Beta-1.0.0**
 
@@ -15,30 +14,30 @@
 
 ## **Zylo-Beta-1.1.0**
 
-*[NEWS]:*
+> [!NEW]:
 - Added Friends and Groups basics in UI.
 - Community room stats on Home (users, messages, rooms).
 - Initial settings structure and quick panel.
 
-*[IMPROVEMENTS]:*
+> [!IMPROVEMENT]:
 - Updated the Login and Sign Up mechanic.
 - Polished The main page of the app.
 
-*[FIXS]:*
+> [!FIX]:
 - Fix some UI functions
 
 ---
 
 ## **Zylo-Beta-v1.2.0**
 
-*[NEWS]:*
+> [!NEW]:
 - Profile editing: avatar/banner upload preview and persistence.
 - Explore section scaffold.
 - Build artifacts distributed, download cards with progress estimator.
 - Offline banner and queued send support groundwork.
 - Direct Messages (DMs): API + sockets for 1:1 chats with history.
 
-*[IMPROVEMENTS]:*
+> [!IMPROVEMENT]:
 - Smaller bundle and assets refactor.
 - Improved settings UX and language labels.
 - Additional UI polish, animations and audio effects.
@@ -46,7 +45,7 @@
 - Groups API: create, join/leave, group chat and file share.
 - Navbar cleanup: separate Friends and Groups into distinct tabs.
 
-*[FIXS]:*
+> [!FIX]:
 - Stability fixes to chat send/file receive.
 - Fixed shareActivity listener resilience and settings sync.
 - Fixed signup eye icon toggle with Feather icons.
@@ -59,7 +58,7 @@
 
 ## **Zylo-Beta-v1.2.1**
 
-*[NEWS]:*
+> [!NEW]:
 - UI/UX: Completely change the UI with a more modern look.
 - Groups/Servers Icon: Now when you make a new group/server, you can choose a image to be your group/server icon.
 - DMs file share: Now you can upload files and images.
@@ -68,7 +67,7 @@
 - Theme Editor: Added "Reset to Default" button to restore original settings.
 - Theme Editor: New "Midnight" preset theme with cyan accents.
 
-*[IMPROVEMENTS]:*
+> [!IMPROVEMENT]:
 - Groups/Servers: Completely change how the groups/server works, now you can create a new group/server by via **(+)** button under the DM's button.
 - Group Channels: Rework how they work and improve it so that's more *user-friendly*.
 - Settings: Rework the settings, now they work fine without any bugs.
@@ -76,7 +75,7 @@
 - Theme Editor: Restructured modal layout for better accessibility.
 - Backend Stability: Improved the backend server so that it x2 times faster with the processing.
 
-*[FIXES]:*
+> [!FIX]:
 - DM Chat: Removed redundant border-top from the message input container.
 - Mobile: Restored standard sidebar navigation and fixed structural glitches.
 - Profile: Fix the ``aboutMe`` and ``profileBio`` after saving bug.
@@ -85,19 +84,19 @@
 
 ## **Zylo-Beta-v1.3.0** *(Latest)*
 
-*[NEWS]:*
+> [!NEW]:
 - **Integrated Content**: Home page now directly includes QnA and What's New sections for immediate access.
 - **Anchor Navigation**: Sidebar links now use smooth scrolling to specific sections on the Home page.
 - **Improved Sidebar**: Added "Quick Actions" to the profile sidebar for faster avatar and banner updates.
 - **Consolidated Navigation**: Refactored the core navigation system into a unified `navigateTo` function.
 
-*[IMPROVEMENTS]:*
+> [!IMPROVEMENT]:
 - **Home UX**: Removed redundant stats cards to prioritize useful QnA and Updates.
 - **Profile UX**: Inlined Activity, Media, and Cloud into the Profile tab for a more seamless experience.
 - **Documentation**: Major professional overhaul of README.md with detailed setup guides and features.
 - **QnA**: Expanded with 15+ comprehensive questions covering all major features.
 
-*[FIXES]:*
+> [!FIX]:
 - **Profile Navigation**: Fixed a bug where profile sub-items would reload the entire view unnecessarily.
 - **UI Consistency**: Corrected various typos and improved alignment in mobile view.
 - **Button Highlighting**: Fixed "ghost focus" in the profile sidebar where multiple items appeared active simultaneously.
