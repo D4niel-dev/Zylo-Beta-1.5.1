@@ -1,6 +1,7 @@
 node_modules/
 backend/uploads/
 backend/data/
+backend/__pycache__/
 .env
 dist/
 *.json
