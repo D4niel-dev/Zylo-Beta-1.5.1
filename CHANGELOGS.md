@@ -42,9 +42,9 @@
 - Smaller bundle and assets refactor.
 - Improved settings UX and language labels.
 - Additional UI polish, animations and audio effects.
-- Friends API: request, accept, decline, remove, UI wiring.
-- Groups API: create, join/leave, group chat and file share.
-- Navbar cleanup: separate Friends and Groups into distinct tabs.
+- **Friends API**: request, accept, decline, remove, UI wiring.
+- **Groups API**: create, join/leave, group chat and file share.
+- **Navbar cleanup**: separate Friends and Groups into distinct tabs.
 
 ### FIX :
 - Stability fixes to chat send/file receive.
