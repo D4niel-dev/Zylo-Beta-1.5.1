@@ -1,5 +1,9 @@
-# *Zylo Changelogs* 🛠
-*This is where all the changes are announced/archive for future official release of the app.*
+<div align="center">
+  <img src="frontend/images/Zylo_changelogs.png" 
+    width="100%"
+    height="100%"/>
+  <p><strong><i>Updates • Improvements • Fixes</i></strong></p>
+</div>
 
 ---
 
