@@ -2,6 +2,7 @@ node_modules/
 backend/uploads/
 backend/data/
 backend/__pycache__/
+backend/ai/__pycache__/
 scripts/future_plans/
 .agent/
 .shared/
