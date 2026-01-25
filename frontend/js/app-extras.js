@@ -398,8 +398,7 @@
     document.querySelectorAll('.sidebar-tab').forEach(tab => {
       tab.addEventListener('click', () => {
         SoundEngine.play('ui');
-        // small defer to ensure active class applied before feather styles
-        setTimeout(applyActiveIconFill, 0);
+        setTimeout(applyActiveIconFill, 0); // small defer to ensure active class applied before feather styles
       });
     });
 

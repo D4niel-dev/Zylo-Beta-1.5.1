@@ -3,7 +3,7 @@ backend/uploads/
 backend/data/
 backend/__pycache__/
 backend/ai/__pycache__/
-scripts/future_plans/
+scripts/plans/
 .agent/
 .shared/
 .env
