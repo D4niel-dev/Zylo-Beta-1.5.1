@@ -1527,10 +1527,49 @@ def moments_comment():
     
     return jsonify({"success": False, "error": "Post not found"}), 404
 
+# --- New RESTful Comment Endpoints ---
+
+@app.route('/api/moments/<post_id>/comments', methods=['GET'])
+def get_moment_comments(post_id):
+    posts = load_explore()
+    for p in posts:
+        if p.get('id') == post_id:
+            comments = p.get('comments', [])
+            return jsonify({"success": True, "comments": comments})
+    return jsonify({"success": False, "error": "Post not found"}), 404
+
+@app.route('/api/moments/<post_id>/comments', methods=['POST'])
+def add_moment_comment(post_id):
+    data = request.json or {}
+    username = (data.get('username') or '').strip()
+    content = (data.get('content') or '').strip()
+    
+    if not username or not content:
+        return jsonify({"success": False, "error": "Missing fields"}), 400
+        
+    posts = load_explore()
+    for idx, p in enumerate(posts):
+        if p.get('id') == post_id:
+            comments = p.get('comments', [])
+            new_comment = {
+                'id': f"c{random.randint(100000,999999)}",
+                'username': username,
+                'content': content, 
+                'timestamp': int(__import__('time').time())
+            }
+            comments.append(new_comment)
+            posts[idx]['comments'] = comments
+            save_explore(posts)
+            return jsonify({"success": True, "comment": new_comment})
+            
+    return jsonify({"success": False, "error": "Post not found"}), 404
+
 
 # ============ Cloud Storage (My Cloud) ============
 
 CLOUD_FILE = os.path.join(DATA_DIR, 'cloud.json')
+CLOUD_DIR = os.path.join(UPLOADS_DIR, 'cloud')
+os.makedirs(CLOUD_DIR, exist_ok=True)
 
 def load_cloud():
     if not os.path.exists(CLOUD_FILE):
@@ -1573,14 +1612,25 @@ def cloud_upload():
     if not username or not file_data:
         return jsonify({"success": False, "error": "Missing username/fileData"}), 400
     
-    url = _save_data_url_for_user(username, file_data, file_name)
-    if not url:
-        return jsonify({"success": False, "error": "Failed to save file"}), 500
-    
+    # --- Backend Deduplication Fix ---
+    # Check if file with same name/size already exists for user
     try:
         size_bytes = int(len(file_data.split(',')[-1]) * 3 / 4)
     except:
         size_bytes = 0
+
+    all_files = load_cloud()
+    for existing in all_files:
+        if (existing.get('username') == username and 
+            existing.get('fileName') == file_name and 
+            abs(existing.get('size', 0) - size_bytes) < 100): # Allow small size variance due to encoding
+            
+            # Found duplicate! Return existing one instead of creating new.
+            return jsonify({"success": True, "file": existing, "message": "File already exists"})
+
+    url = _save_data_url_for_user(username, file_data, file_name)
+    if not url:
+        return jsonify({"success": False, "error": "Failed to save file"}), 500
     
     cloud_entry = {
         'id': f"cf{random.randint(100000, 999999)}",
@@ -1592,12 +1642,10 @@ def cloud_upload():
         'createdAt': int(__import__('time').time())
     }
     
-    all_files = load_cloud()
     all_files.append(cloud_entry)
     save_cloud(all_files)
     
     return jsonify({"success": True, "file": cloud_entry})
-
 
 @app.route('/api/cloud/delete', methods=['POST'])
 def cloud_delete():
@@ -1624,6 +1672,65 @@ def cloud_delete():
     save_cloud(all_files)
     
     return jsonify({"success": True})
+
+
+@app.route('/api/cloud/download-all', methods=['GET'])
+def cloud_download_all():
+    """Create and download a ZIP of all user files."""
+    username = (request.args.get('username') or '').strip()
+    if not username:
+        return jsonify({"success": False, "error": "Missing username"}), 400
+
+    import zipfile
+    import io
+
+    all_files = load_cloud()
+    user_files = [f for f in all_files if f.get('username') == username]
+    
+    if not user_files:
+         return jsonify({"success": False, "error": "No files to download"}), 404
+
+    # Create in-memory zip
+    memory_file = io.BytesIO()
+    with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for f in user_files:
+            file_name = f.get('fileName')
+            file_url = f.get('url')
+            
+            # Resolve physical path
+            # URLs are like /uploads/username/filename or /images/default.png
+            # We need to map this to local disk
+            if not file_url:
+                continue
+                
+            local_path = None
+            if file_url.startswith('/uploads/'):
+                # /uploads/username/filename -> UPLOADS_DIR/username/filename
+                # app.py defines UPLOADS_DIR
+                # Remove '/uploads/' prefix
+                rel_path = file_url.replace('/uploads/', '', 1).lstrip('/')
+                local_path = os.path.join(UPLOADS_DIR, rel_path)
+                
+            elif file_url.startswith('/images/'):
+                # /images/filename -> FRONTEND_DIR/images/filename
+                rel_path = file_url.replace('/images/', '', 1).lstrip('/')
+                local_path = os.path.join(FRONTEND_DIR, 'images', rel_path)
+            
+            if local_path and os.path.exists(local_path):
+                # Add to zip, using just the filename to flatten structure or keep it simple
+                try:
+                    zf.write(local_path, arcname=file_name)
+                except Exception as e:
+                    print(f"Failed to add {file_name} to zip: {e}")
+    
+    memory_file.seek(0)
+    
+    return flask.send_file(
+        memory_file,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name=f'{username}_cloud_files.zip'
+    )
 
 
 @app.route('/api/get-user')
@@ -3334,6 +3441,44 @@ def like_moment():
         
     save_moments(moments)
     return jsonify({"success": True, "action": action, "likes": moment['likes']})
+
+@app.route('/api/cloud/files', methods=['GET'])
+def cloud_list():
+    username = request.args.get('username')
+    if not username: return jsonify({"success": False, "error": "Username required"}), 400
+    
+    user_dir = os.path.join(CLOUD_DIR, username)
+    if not os.path.exists(user_dir): return jsonify({"success": True, "files": []})
+    
+    files = []
+    try:
+        for fname in os.listdir(user_dir):
+            fpath = os.path.join(user_dir, fname)
+            if os.path.isfile(fpath):
+                stat = os.stat(fpath)
+                ext = fname.split('.')[-1].lower() if '.' in fname else ''
+                ftype = 'application/octet-stream'
+                if ext in ['png', 'jpg', 'jpeg', 'gif', 'webp']: ftype = f'image/{ext}'
+                
+                url = f"/api/cloud/serve/{username}/{fname}"
+                files.append({
+                    "id": fname,
+                    "fileName": fname,
+                    "fileType": ftype,
+                    "size": stat.st_size,
+                    "createdAt": stat.st_ctime,
+                    "url": url
+                })
+        files.sort(key=lambda x: x['createdAt'], reverse=True)
+        return jsonify({"success": True, "files": files})
+    except Exception as e:
+        print("Cloud list error:", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/cloud/serve/<username>/<filename>')
+def serve_cloud_file(username, filename):
+    user_dir = os.path.join(CLOUD_DIR, username)
+    return send_from_directory(user_dir, filename)
 
 # Run the app (IMPORTANT: Use socketio.run to enable Socket.IO support)
 if __name__ == "__main__":

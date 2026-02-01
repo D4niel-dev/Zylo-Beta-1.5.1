@@ -121,7 +121,7 @@
 
 ---
 
-## **Zylo-Beta-v1.4.2** *(Latest)*
+## **Zylo-Beta-v1.4.2** — *The Intelligents Update*
 
 ### NEW :
 - **Dual AI Persona System**: Choose between **Diszi** (Analytical) and **Zily** (Creative) assistants.
@@ -132,3 +132,27 @@
 ### FIX :
 - **Logout Button**: Fixed visibility bug in collapsed sidebar state.
 - **Avatar Loading**: Fixed avatar display issues in Moments feed.
+
+---
+
+## **Zylo-Beta-v1.5.0** — *The Stability & Polish Update* *(Latest)*
+
+### NEW :
+- **Global Sidebar Toggle**: Added expand/collapse button to ALL specific headers (Home, Friends, Settings, Groups, Cloud, Profile) for consistent navigation control.
+- **Cloud "Download All"**: Added ability to zip and download all cloud files at once.
+- **Moments Comments**: Fully implemented commenting system with backend support (GET/POST) and expandable UI.
+- **New GIFs**: Added 6 new reaction GIFs (Applause, Facepalm, Thinking, Heart, Shocked, Dance).
+
+### IMPROVEMENT :
+- **Sidebar Persistence**: Sidebar now maintains its collapsed/expanded state when switching between tabs.
+- **Cloud Search**: Added real-time filtering for cloud files.
+- **Cloud Uploads**: Implemented debounce logic to prevent duplicate file uploads.
+- **Optimistic UI**: Implemented instant feedback for "Like" and "Comment" actions in Moments to prevent feed reloads.
+
+### FIX :
+- **Asset Loading**: Replaced broken Tenor GIF URLs with reliable Giphy links to fix the Sticker Picker.
+- **Sticker Picker**: Fixed grid alignment and tab switching bugs in the sticker menu.
+- **Moments Disappearing**: Fixed a critical bug where posts would vanish upon interaction (like/comment).
+- **Settings Tab**: Fixed the 'General' settings tab not rendering correctly due to nesting issues.
+- **Backend Stability**: Fixed multiple endpoint issues in `app.py` related to cloud and social features.
+- **Friends/Groups Lists**: Fixed layout and visibility issues in the secondary sidebar.

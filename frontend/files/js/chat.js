@@ -46,6 +46,11 @@ function getStatusIcon(status) {
  */
 async function createDiscordMessage(data) {
     const msgWrapper = document.createElement("div");
+    
+    // Determine ownership
+    const myUsername = localStorage.getItem('username') || localStorage.getItem('savedUsername');
+    const msgUsername = data.username || data.from; // 'from' is often used in DMs
+    const isOwnMessage = myUsername && msgUsername && (myUsername === msgUsername);
     // Add message ID for deduplication
     if (data.id) msgWrapper.setAttribute('data-msg-id', data.id);
     // Important: Add timestamp for finding message during updates
@@ -61,6 +66,10 @@ async function createDiscordMessage(data) {
     actions.className = "absolute right-4 -top-4 hidden group-hover:flex bg-discord-gray-900 rounded border border-discord-gray-800 shadow-sm z-20 scale-90 p-0.5";
 
     const replyBtn = document.createElement("button");
+    
+    // Add Reaction Button
+    const moreReactBtn = document.createElement("button");
+    moreReactBtn.className = "p-1.5 hover:bg-discord-gray-600 rounded text-discord-gray-400 hover:text-white transition";
     moreReactBtn.innerHTML = '<i data-feather="plus" class="w-3 h-3"></i>';
 
     // Full reaction picker popup - fixed positioning
@@ -102,6 +111,26 @@ async function createDiscordMessage(data) {
 
     moreReactBtn.appendChild(reactionPicker);
     actions.appendChild(moreReactBtn);
+
+    // Reply Button
+    replyBtn.className = "p-1.5 hover:bg-discord-gray-600 rounded text-discord-gray-400 hover:text-white transition";
+    replyBtn.innerHTML = '<i data-feather="corner-up-left" class="w-3 h-3"></i>';
+    replyBtn.onclick = (e) => {
+        e.stopPropagation();
+        // Trigger reply logic (assuming replyToMessage exists globally or passed in)
+        if (typeof replyToMessage === 'function') replyToMessage(data);
+    };
+    actions.appendChild(replyBtn);
+
+    // Edit Button
+    const editBtn = document.createElement("button");
+    editBtn.className = "p-1.5 hover:bg-discord-gray-600 rounded text-discord-gray-400 hover:text-white transition";
+    editBtn.innerHTML = '<i data-feather="edit-2" class="w-3 h-3"></i>';
+    editBtn.onclick = (e) => {
+        e.stopPropagation();
+        // Trigger edit logic
+        if (typeof startEditMessage === 'function') startEditMessage(data.id, data.content);
+    };
     actions.appendChild(editBtn);
 
     // Delete Button (only for own messages)
