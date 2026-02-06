@@ -47,7 +47,7 @@ Also, some small bug fixes. 🛠
 ```
 
 ## 2. New AI UI/UX Design (`global.css`)
-- Redesign the AI Chat UI with a translucent, rounded, and clean look.
+- Redesign the AI Chat UI with a translucent, rounded, clean and modern look.
 
 **Concept Code :**
 ```css
