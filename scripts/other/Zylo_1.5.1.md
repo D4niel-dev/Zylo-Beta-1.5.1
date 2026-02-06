@@ -245,19 +245,21 @@ document.getElementById('sendAiBtn').addEventListener('click', sendAiMessage);
 - **If Diszi + Planning** : Append "You are in planning mode. Break this down into actionable steps." to the system instructions.
 - **If Zily + Review** : Append "You are in review mode. Critically analyze the following content." to the system instructions.
 
-## 5. Improvements
-### Key Improvements Made:
-1.  **Layout:** Moved the mode selector inside the input box to keep the interface focused (like Gemini's model switcher).
-2.  **UX:** Added `autoResize` so users can see long prompts without scrolling inside a tiny box.
-3.  **Context:** The `persona` and `mode` are now explicitly sent with every message, allowing your AI to change its "personality" instantly without refreshing.
+## 5. New icons
+### Changing from `feather-icons` to `heroicons`:
+
+1.  **Layout:** Add a new dropdown menu in `Appearance` settings name `Icons`, users can select which style of icons they want.
+
+2.  **UI/UX:** Replace all of the old `feather-icons` to `heroicons` for a more modern look to the app.
+
+3.  **Context:** The `heroicons` style will be set to be the default icons, if users want to change to the OG icons, they can change it in `Settings > Appearance > Icons`.
 
 ---
 
 ## 6. Additional Optimizations 🚀
 
 ### 6.1 HTML/Accessibility Improvements
-
-**Add ARIA labels and keyboard navigation:**
+**Add ARIA labels and keyboard navigation :**
 ```html
 <div class="ai-input-wrapper" role="search" aria-label="AI Chat Interface">
     <div class="ai-input-container">
@@ -1048,8 +1050,7 @@ if (typeof module !== 'undefined' && module.exports) {
 ```
 
 ### 6.4 Backend Optimization Suggestions
-
-**Create a dedicated mode configuration system:**
+**Create a dedicated mode configuration system :**
 
 ```python
 # backend/ai/mode_config.py
@@ -1154,7 +1155,7 @@ ModeRegistry.register(ModeConfig(
 ))
 ```
 
-**Enhanced backend handler with caching and rate limiting:**
+**Enhanced backend handler with caching and rate limiting :**
 
 ```python
 # backend/ai/chat_handler.py
@@ -1400,7 +1401,7 @@ const perfMonitor = new PerformanceMonitor();
 ```
 ---
 
-## 7. AI Modes 🛫
+## 7. AI Modes 🛫 (IMPORTANT)
 *Add new new modes for AI's and modals that run with their modes :*
 
 - Diszi : Thinking/Coder (`qwen3-coder`), Planning (`lfm2.5-thinking`), Debug (`qwen3-coder/glm-ocr`).
