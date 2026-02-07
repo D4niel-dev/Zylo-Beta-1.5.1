@@ -4,7 +4,7 @@ This update focuses on remaking the message input box to mirror the Gemini UI an
 
 Also, some small bug fixes. 🛠
 
-## 1. Frontend UI Update (`mainapp.html`)
+## 1. Frontend UI Update 🖥 (`mainapp.html`)
 - Replace existing message input container in the AI Chat and remake it to use a pill-shaped container and includes a new dropdown menu for AI modes.
 
 **Concept Code :**
@@ -46,7 +46,7 @@ Also, some small bug fixes. 🛠
 </div>
 ```
 
-## 2. New AI UI/UX Design (`global.css`)
+## 2. New AI UI/UX Design 🛠 (`global.css`)
 - Redesign the AI Chat UI with a translucent, rounded, clean and modern look.
 
 **Concept Code :**
@@ -169,7 +169,7 @@ Also, some small bug fixes. 🛠
 .mode-item:hover { background: rgba(255,255,255,0.05); color: var(--ai-accent); }
 ```
 
-## 3. Frontend Logic Update (`ai-chat.js`)
+## 3. Frontend Logic Update 🔌 (`ai-chat.js`)
 - Update the logic so it can handles auto-resize, dropdown menu selection, and passing AI modes to Backend.
 
 **Concept Code :**
@@ -1404,11 +1404,13 @@ const perfMonitor = new PerformanceMonitor();
 ## 7. AI Modes 🛫 (IMPORTANT)
 **Add new new modes for AI's and modals that run with their modes :**
 
-- **Diszi :** Thinking/Coder (`qwen3-coder`), Planning (`lfm2.5-thinking`), Debug (`qwen3-coder/glm-ocr`).
+- **Diszi :** Thinking (`qwen3-coder`), Planning (`lfm2.5-thinking`), Fast (`glm-ocr`).
 
-- **Zily :** Thinking (`lfm2.5-thinking`), Writer (`qwen3:4b`), Review (`gemm3:latest/gemma3:1b`).
+- **Zily :** Thinking (`lfm2.5-thinking`), Writer (`qwen3:4b`), Fast (`gemma3:1b`).
 
 - **Also add a new dropdown menu that shows the thoughts of the AI's when they are in `Thinking` mode in their message when they are running.**
+
+- The `Fast` mode will be set as the `defaultMode` for all the AI's when the app starts. But if a mode is selected, it'll be saved and loaded.
 
 ---
 
