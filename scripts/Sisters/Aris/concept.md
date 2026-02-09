@@ -1,12 +1,12 @@
 # Character Concept: Aris
 
-<table width="100%">
+<table>
   <tr>
-    <td width="20%" align="center">
+    <td align="center">
       <img src="/scripts/Sisters/assets/Aris.png" width="150"><br>
       <b>Aris</b>
     </td>
-    <td width="80%">
+    <td>
       <strong>Role:</strong> The Father<br>
       <strong>Archetype:</strong> The Heart of the Family<br>
       <strong>Personality:</strong> Supportive, Loving, Occasionally Scolded<br>
