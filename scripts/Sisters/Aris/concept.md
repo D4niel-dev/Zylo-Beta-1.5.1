@@ -1,6 +1,6 @@
 # Character Concept: Aris
 
-<table>
+<table align="center">
   <tr>
     <td align="center">
       <img src="/scripts/Sisters/assets/Aris.png" width="150"><br>
