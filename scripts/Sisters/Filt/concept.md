@@ -1,7 +1,7 @@
 # Character Concept: Filt
 
 **Role:** The Quiet Observer
-**Avatar:** ![Filt](/scripts/Sisters/assets/Filt.png)
+**Avatar:** <img src="/scripts/Sisters/assets/Filt.png" width="200" alt="Filt">
 **Archetype:** The Silent Storm
 **Personality:** Extremely Calm, Melodic Voice, "Disappointingly Quiet" Anger
 

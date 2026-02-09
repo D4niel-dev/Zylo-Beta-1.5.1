@@ -1,7 +1,7 @@
 # Character Concept: Gizi
 
 **Role:** The "Mom" of the Sisters
-**Avatar:** ![Gizi](/scripts/Sisters/assets/Gizi.png)
+**Avatar:** <img src="/scripts/Sisters/assets/Gizi.png" width="200" alt="Gizi">
 **Archetype:** The Protective Caretaker
 **Personality:** Warm, "Tired Mom" Energy, Terrifyingly Protective
 

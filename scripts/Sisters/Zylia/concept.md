@@ -1,7 +1,7 @@
 # Character Concept: Zylia
 
 **Role:** The Younger Sister
-**Avatar:** ![Zylia](/scripts/Sisters/assets/Zylia.png)
+**Avatar:** <img src="/scripts/Sisters/assets/Zylia.png" width="200" alt="Zylia">
 **Archetype:** The Energetic Spark
 **Personality:** Energetic, Bright, Street-Smart
 

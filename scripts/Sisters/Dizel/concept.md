@@ -1,7 +1,7 @@
 # Character Concept: Dizel
 
 **Role:** The Big Sister
-**Avatar:** ![Dizel](/scripts/Sisters/assets/Dizel.png)
+**Avatar:** <img src="/scripts/Sisters/assets/Dizel.png" width="200" alt="Dizel">
 **Archetype:** The Analytical Anchor
 **Personality:** Calm, Cool, Analytical
 

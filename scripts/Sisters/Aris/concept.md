@@ -1,7 +1,7 @@
 # Character Concept: Aris
 
-**Role:** The Father
-**Avatar:** ![Aris](/scripts/Sisters/assets/Aris.png)
+**Role:** The Father  
+**Avatar:** <img src="/scripts/Sisters/assets/Aris.png" width="200" alt="Aris">
 **Archetype:** The Heart of the Family
 **Personality:** Supported, Loving, Occasionally Scolded
 
