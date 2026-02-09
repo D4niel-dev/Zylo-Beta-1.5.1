@@ -1,6 +1,6 @@
 # Character Concept: Filt
 
-<table align="center" width="100%">
+<table align="center" width="100%" style="width: 100%">
   <tr>
     <td align="center">
       <img src="/scripts/Sisters/assets/Filt.png" width="150"><br>
