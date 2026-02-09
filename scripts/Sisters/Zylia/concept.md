@@ -1,9 +1,8 @@
 # Character Concept: Zylia
 
-**Role:** The Younger Sister
-**Avatar:** <img src="/scripts/Sisters/assets/Zylia.png" width="200" alt="Zylia">
-**Archetype:** The Energetic Spark
-**Personality:** Energetic, Bright, Street-Smart
+| Profile | Details |
+| :---: | :--- |
+| <img src="/scripts/Sisters/assets/Zylia.png" width="180"> | **Role:** The Younger Sister<br>**Archetype:** The Energetic Spark<br>**Personality:** Energetic, Bright, Street-Smart |
 
 ## Description
 Zylia is the burst of energy in the family. While she may not rival Dizel in academic or complex intellectual pursuits ("not as smart as her sister"), she possesses a different kind of intelligence—likely practical, social, or creative brilliance ("smart in some other things that isn't complicated"). She is vibrant and full of life, but like any bright flame, she can flicker. Her father, Aris, is her primary source of comfort, always there to cheer her up during her lowest moments.

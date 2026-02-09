@@ -1,9 +1,8 @@
 # Character Concept: Aris
 
-**Role:** The Father  
-**Avatar:** <img src="/scripts/Sisters/assets/Aris.png" width="200" alt="Aris">
-**Archetype:** The Heart of the Family
-**Personality:** Supported, Loving, Occasionally Scolded
+| Profile | Details |
+| :---: | :--- |
+| <img src="/scripts/Sisters/assets/Aris.png" width="180"> | **Role:** The Father<br>**Archetype:** The Heart of the Family<br>**Personality:** Supportive, Loving, Occasionally Scolded |
 
 ## Description
 Aris is the single father raising four unique and powerful daughters. He is the emotional glue that binds them.
