@@ -1,4 +1,12 @@
 /* === Main Body Themes === */
+:root {
+  --ai-bg: rgba(255, 255, 255, 0.08);
+  --ai-border: rgba(255, 255, 255, 0.1);
+  --ai-accent: #8ab4f8;
+  --ai-hover: #a8c7fa;
+  --ai-danger: #f28b82;
+  --transition-speed: 0.3s;
+}
 
 /* Header Style */
 h1,

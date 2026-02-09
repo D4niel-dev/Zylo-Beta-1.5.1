@@ -59,6 +59,9 @@ function toggleSidebarCollapse() {
 
     const isCollapsed = sidebar.classList.toggle('collapsed');
     localStorage.setItem('sidebarCollapsed', isCollapsed ? 'true' : 'false');
+    
+    // Toggle body class for CSS selectors
+    document.body.classList.toggle('sidebar-collapsed', isCollapsed);
 
     // Update button icon
     const btn = document.getElementById('sidebarCollapseBtn');
@@ -78,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sidebar = document.getElementById('subPanelContainer');
         if (sidebar) {
             sidebar.classList.add('collapsed');
+            document.body.classList.add('sidebar-collapsed');
         }
     }
     

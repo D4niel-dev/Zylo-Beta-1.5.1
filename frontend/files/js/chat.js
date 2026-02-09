@@ -459,6 +459,41 @@ async function createDiscordMessage(data) {
 
         contentWrapper.appendChild(body);
 
+        // Render Attachments (Phase 4)
+        if (data.attachments && data.attachments.length > 0) {
+            const attContainer = document.createElement('div');
+            attContainer.className = 'flex flex-wrap gap-2 mt-2';
+            
+            data.attachments.forEach(att => {
+                if (att.fileType === 'image') {
+                    const img = document.createElement('img');
+                    img.src = att.url;
+                    img.className = 'max-w-xs max-h-60 rounded-lg cursor-pointer hover:opacity-90 transition shadow-sm border border-black/20';
+                    img.onclick = () => window.open(att.url, '_blank');
+                    attContainer.appendChild(img);
+                } else {
+                    const fileLink = document.createElement('a');
+                    fileLink.href = att.url;
+                    fileLink.target = '_blank';
+                    fileLink.className = 'flex items-center gap-3 bg-discord-gray-800 p-3 rounded-lg border border-discord-gray-700 hover:bg-discord-gray-700 transition max-w-xs group';
+                    fileLink.innerHTML = `
+                        <div class="bg-discord-gray-700 p-2 rounded group-hover:bg-discord-gray-600 transition">
+                            <i data-feather="file" class="w-6 h-6 text-blue-400"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <div class="text-sm font-medium text-white truncate" title="${att.originalName || att.filename}">${att.originalName || att.filename}</div>
+                            <div class="text-xs text-gray-400 uppercase font-semibold tracking-wide">${att.fileType || 'FILE'}</div>
+                        </div>
+                        <i data-feather="download" class="w-4 h-4 text-gray-500 group-hover:text-gray-300 ml-auto transition"></i>
+                    `;
+                    attContainer.appendChild(fileLink);
+                }
+            });
+            contentWrapper.appendChild(attContainer);
+            // Defer feather replace
+            setTimeout(() => { if(window.feather) feather.replace(); }, 0);
+        }
+
         // Create embed cards for URLs
         for (const url of urls.slice(0, 3)) { 
             const embedCard = document.createElement("div");
@@ -840,28 +875,122 @@ function toggleEmojiPicker(pickerId, inputId) {
 }
 window.toggleEmojiPicker = toggleEmojiPicker;
 
-function sendFile(event) {
+let pendingAttachments = [];
+
+async function sendFile(event) {
     const file = event.target.files[0];
     if (!file) return;
-    const username = localStorage.getItem('savedUsername') || 'User';
 
-    const MAX_SIZE = 10 * 1024 * 1024;
+    const MAX_SIZE = 50 * 1024 * 1024; // 50MB
     if (file.size > MAX_SIZE) {
-        alert("File is too large! Maximum file size is 10MB.");
+        alert("File is too large! Maximum file size is 50MB.");
         event.target.value = "";
         return;
     }
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        socket.emit("send_file", {
-            username,
-            fileName: file.name,
-            fileType: file.type,
-            fileData: e.target.result
+
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // Show loading state?
+    // prompt "Uploading..."
+    
+    try {
+        const res = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
         });
-    };
-    reader.readAsDataURL(file);
+        const data = await res.json();
+        
+        if (data.success) {
+            pendingAttachments.push({
+                url: data.url,
+                filename: data.filename,
+                fileType: data.fileType,
+                originalName: data.originalName
+            });
+            renderAttachmentPreview();
+        } else {
+            alert("Upload failed: " + data.error);
+        }
+    } catch (e) {
+        console.error("Upload error", e);
+        alert("Upload error");
+    }
+    
+    event.target.value = "";
 }
+
+function renderAttachmentPreview() {
+    const preview = document.getElementById('attachmentPreview');
+    if (!preview) return;
+    
+    if (pendingAttachments.length === 0) {
+        preview.classList.add('hidden');
+        preview.innerHTML = '';
+        return;
+    }
+    
+    preview.classList.remove('hidden');
+    preview.innerHTML = '';
+    
+    pendingAttachments.forEach((att, index) => {
+        const el = document.createElement('div');
+        el.className = 'relative group flex-shrink-0';
+        
+        let content = '';
+        if (att.fileType === 'image') {
+            content = `<img src="${att.url}" class="h-20 w-auto rounded-md object-cover border border-discord-gray-600">`;
+        } else {
+            content = `
+                <div class="h-20 w-20 bg-discord-gray-800 rounded-md flex flex-col items-center justify-center border border-discord-gray-600 p-2">
+                    <i data-feather="file" class="w-6 h-6 text-gray-400 mb-1"></i>
+                    <span class="text-[10px] text-gray-300 truncate w-full text-center" title="${att.originalName}">${att.originalName}</span>
+                </div>
+            `;
+        }
+        
+        el.innerHTML = `
+            ${content}
+            <button onclick="window.removeAttachment(${index})" class="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-0.5 shadow-md">
+                <i data-feather="x" class="w-3 h-3"></i>
+            </button>
+        `;
+        preview.appendChild(el);
+    });
+    
+    if (window.feather) feather.replace();
+}
+
+window.removeAttachment = function(index) {
+    pendingAttachments.splice(index, 1);
+    renderAttachmentPreview();
+};
+
+window.sendFile = sendFile; // Expose to window
+
+function sendMessage() {
+    const input = document.getElementById("chatInput");
+    const message = input.value.trim();
+    const username = localStorage.getItem("savedUsername") || "User";
+
+    if ((message || pendingAttachments.length > 0) && username) {
+        // Stop typing immediately
+        clearTimeout(typingTimeout);
+        socket.emit("stop_typing", { room: currentRoom, username });
+        isTyping = false;
+
+        socket.emit("send_message", {
+            username,
+            message,
+            attachments: pendingAttachments
+        });
+        
+        input.value = "";
+        pendingAttachments = [];
+        renderAttachmentPreview();
+        input.style.height = 'auto'; // Reset height
+    }
+};
 window.sendFile = sendFile;
 
 // Voice Message Recording
@@ -1014,6 +1143,10 @@ function switchChatRoom(room) {
         tabFriends.classList.add('hidden');
     }
 
+    // Input containers
+    const communityInput = document.getElementById('communityInputContainer');
+    const aiInput = document.querySelector('.ai-input-wrapper');
+
     if (room === 'community') {
         chatMessagesCommunity.classList.remove('hidden');
         chatMessagesAI.classList.add('hidden');
@@ -1025,6 +1158,10 @@ function switchChatRoom(room) {
         const aiTabBar = document.getElementById('aiTabBar');
         if (aiTabBar) aiTabBar.classList.add('hidden');
         
+        // Toggle Inputs
+        if (communityInput) communityInput.classList.remove('hidden');
+        if (aiInput) aiInput.classList.remove('active');
+
         // Reset ID
         const input = document.getElementById('chatInput');
         if (input) input.placeholder = "Message #Community";
@@ -1035,12 +1172,14 @@ function switchChatRoom(room) {
         aiControls.classList.remove('hidden');
         if (btnAI) btnAI.classList.add('active');
         if (btnCommunity) btnCommunity.classList.remove('active');
-        if (title) title.textContent = '🤖 AI Chat';
+        if (title) title.textContent = 'AI Chat';
+        
+        // Toggle Inputs
+        if (communityInput) communityInput.classList.add('hidden');
+        if (aiInput) aiInput.classList.add('active');
         
         // Show AI UI
         const aiTabBar = document.getElementById('aiTabBar');
-        // Only show if there are active sessions? 
-        // aiManager.updateUI() handles this logic but we should ensure it's not force-hidden if sessions exist
         if (aiTabBar && window.aiManager && window.aiManager.activeSessionId) {
              aiTabBar.classList.remove('hidden');
         }

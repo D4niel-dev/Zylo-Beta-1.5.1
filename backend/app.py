@@ -12,9 +12,12 @@ import shutil
 import random
 import urllib.request
 import urllib.error
+import requests
 import ssl
 import uuid
 from typing import List, Dict
+import chat_handler
+
 
 # Initialize Flask app and SocketIO
 app = Flask(__name__, static_folder='frontend')
@@ -168,7 +171,7 @@ except Exception:
         {"key": "friend", "name": "Friend AI", "style": "friendly, empathetic"},
         {"key": "supporter", "name": "Supporter AI", "style": "encouraging, motivational"},
     ]
-    def pick_persona(key: str | None):
+    def pick_persona(key: str | None, mode: str | None = None):
         class _P:
             def __init__(self, key: str):
                 self.key = key or 'helper'
@@ -955,12 +958,61 @@ def dm_messages():
     
     return jsonify({"success": True, "message": dm_entry})
 
+# File Upload Endpoint (New Phase 4)
+@app.route("/api/upload", methods=["POST"])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"success": False, "error": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"success": False, "error": "No selected file"}), 400
+    
+    if file:
+        try:
+            filename = file.filename
+            # Simple sanitization
+            filename = "".join([c for c in filename if c.isalpha() or c.isdigit() or c in (' ','.','_','-')]).strip()
+            # Unique prefix
+            unique_name = f"{uuid.uuid4().hex[:8]}_{filename}"
+            save_path = os.path.join(UPLOADS_DIR, unique_name)
+            file.save(save_path)
+            
+            # Determine file type category
+            mime_type = file.content_type
+            file_type = "file"
+            if mime_type.startswith("image/"):
+                file_type = "image"
+            elif mime_type.startswith("video/"):
+                file_type = "video"
+            elif mime_type.startswith("audio/"):
+                file_type = "audio"
+                
+            return jsonify({
+                "success": True, 
+                "url": f"/uploads/{unique_name}", 
+                "filename": filename, 
+                "fileType": file_type,
+                "originalName": file.filename
+            })
+        except Exception as e:
+            return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/uploads/<filename>')
+def serve_uploaded_file(filename):
+    return send_from_directory(UPLOADS_DIR, filename)
+
 @socketio.on("send_message")
 def handle_send_message(data):
     username = data.get("username")
     message = data.get("message")
+    attachments = data.get("attachments", []) # List of {url, type, name}
 
-    msg_data = {"username": username, "message": message}
+    msg_data = {
+        "username": username, 
+        "message": message,
+        "attachments": attachments,
+        "timestamp": int(_time.time())
+    }
     messages.append(msg_data)
     save_messages(messages)
     
@@ -1334,6 +1386,7 @@ def ai_chat():
     messages_in = data.get('messages') or []
     single_message = data.get('message')
     persona_key = (data.get('persona') or '').strip().lower() or None
+    mode_key = (data.get('mode') or '').strip().lower() or None
     username = (data.get('username') or '').strip() or 'anonymous'
     
     if not messages_in and single_message:
@@ -1345,7 +1398,7 @@ def ai_chat():
     if model == 'loading': model = 'gemma:2b'
     
     provider = os.getenv('Zylo_AI_PROVIDER', 'auto').lower()
-    persona = pick_persona(persona_key)
+    persona = pick_persona(persona_key, mode_key)
 
     # Ollama attempt
     if provider in ('ollama', 'auto'):
@@ -3480,6 +3533,56 @@ def serve_cloud_file(username, filename):
     user_dir = os.path.join(CLOUD_DIR, username)
     return send_from_directory(user_dir, filename)
 
+
+# ---------------- AI Chat Endpoints ---------------- #
+
+@app.route('/api/ai/chat', methods=['POST'])
+def ai_chat_endpoint():
+    data = request.json or {}
+    
+    # 1. Try to get token from header
+    token = None
+    auth_header = request.headers.get('Authorization')
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ")[1]
+    
+    # 2. Fallback to body
+    if not token:
+        token = data.get("token")
+        
+    # 3. Validate
+    username = validate_session(token)
+    
+    # Allow guest/dev mode if configured, but for now strict
+    # For development, if no token, check if we have a global dev user
+    if not username:
+        # TEMP: Allow if running locally and no auth provided, maybe? 
+        # No, better to force auth.
+        pass
+
+    return chat_handler.handle_chat_request(data, username)
+
+@app.route('/api/ai/models', methods=['GET'])
+def ai_models_endpoint():
+    return chat_handler.get_available_models()
+
+@app.route('/api/ai/status', methods=['GET'])
+def ai_status_endpoint():
+    return chat_handler.check_service_status()
+
+@app.route('/api/proxy/heroicons/<path:filename>')
+def serve_heroicon_proxy(filename):
+    try:
+        url = f"https://unpkg.com/heroicons@2.0.18/24/outline/{filename}"
+        resp = requests.get(url, timeout=5)
+        if resp.status_code == 200:
+            return (resp.content, 200, {'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=86400'})
+        return jsonify({"error": "Icon not found"}), 404
+    except Exception as e:
+        print(f"Proxy error: {e}")
+        return jsonify({"error": str(e)}), 500
+
 # Run the app (IMPORTANT: Use socketio.run to enable Socket.IO support)
 if __name__ == "__main__":
+
     socketio.run(app, host="0.0.0.0", port=5000, debug=True, allow_unsafe_werkzeug=True)
