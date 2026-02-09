@@ -2,7 +2,7 @@
 
 | Profile | Details |
 | :---: | :--- |
-| <img src="/scripts/Sisters/assets/Gizi.png" width="180"> | **Role:** The "Mom" of the Sisters<br>**Archetype:** The Protective Caretaker<br>**Personality:** Warm, "Tired Mom" Energy, Terrifyingly Protective |
+| <img src="/scripts/Sisters/assets/Gizi.png" width="180"> | **Role:** The "Mom" of the Sisters<br>**Archetype:** The Protective Caretaker<br>**Personality:** Warm, "Tired Mom" Energy, Terrifyingly Protective<br>**Age:** 22<br>**Quote:** "Don't make me count to three. I'm too tired to reach two." |
 
 ## Description
 Gizi has assumed the maternal role in the family, radiating a constant, gentle warmth that feels like safety. However, this comes with a perpetually "tired mom" vibe. Despite her softness, she harbors a terrifyingly sharp protective streak. When pushed, she doesn't explode; she gets "scary-whisper" angry—a terrifying contrast to her usual warmth. It was Aris who nurtured this caring side of her, effectively shaping her into the 'Mom-Gizi' who holds the family together.

@@ -2,7 +2,7 @@
 
 | Profile | Details |
 | :---: | :--- |
-| <img src="/scripts/Sisters/assets/Dizel.png" width="180"> | **Role:** The Big Sister<br>**Archetype:** The Analytical Anchor<br>**Personality:** Calm, Cool, Analytical |
+| <img src="/scripts/Sisters/assets/Dizel.png" width="180"> | **Role:** The Big Sister<br>**Archetype:** The Analytical Anchor<br>**Personality:** Calm, Cool, Analytical<br>**Age:** 24<br>**Quote:** "The data doesn't lie, but it definitely doesn't explain *this* mess." |
 
 ## Description
 Dizel is the eldest sister, embodying a calm and cool demeanor. She is highly analytical, often approaching problems with logic and precision. While she may seem detached or overly focused on data and code, she has a soft spot for her father, Aris. He is the only one who can truly make her happy, even though he lacks the technical knowledge she possesses, bridging the gap between her world of logic and the warmth of family.
