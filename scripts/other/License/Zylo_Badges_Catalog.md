@@ -19,10 +19,14 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 4. Trust / Contribution Badges — verification, reporting, support
 5. Fun / Discovery Badges — easter eggs and playful achievements
 6. System / Tech Badges — indicates how user used the system (local / cloud / offline)
+7. Developer & System Authority Badges (hardcoded / manually assigned only)
+8. Tiered Grind Badges (Gamification Boost)
+9. Hidden / Secret / Ultra Rare Badges (Discover them socially)
+10. Competitive / Social Badges
 
 ---
 
-## Badges (detailed)
+## Badges (Detailed)
 
 ### 1. Thinker
 - **Icon:** 🧠 (brain / idea)
@@ -30,7 +34,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Use Thinking/Planning mode for at least 15 sessions and have 5 messages where the assistant’s reply length ≥ 200 words.
 - **Rarity:** Uncommon
 - **Visibility:** Public
-- **Suggested reward:** "Insightful" highlight on profile; small XP bonus.
+- **Perk:** "Insightful" highlight on profile; small XP bonus.
 
 ---
 
@@ -40,7 +44,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Run the Coder mode 25 times OR request 10 successful code fixes where user marks the fix as helpful.
 - **Rarity:** Common → Uncommon
 - **Visibility:** Public
-- **Suggested reward:** Quick "snippet" sharing option unlocked.
+- **Perk:** Quick "snippet" sharing option unlocked.
 
 ---
 
@@ -50,7 +54,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Upload 10 images that resulted in a meaningful AI-assisted change, or file an accepted bug report with AI-assisted fix.
 - **Rarity:** Uncommon
 - **Visibility:** Public
-- **Suggested reward:** Priority in debug queue (if you implement tiers).
+- **Perk:** Priority in debug queue (if you implement tiers).
 
 ---
 
@@ -60,7 +64,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Generate or edit 10 pieces longer than 300 words, or use "export" for 5 texts.
 - **Rarity:** Common
 - **Visibility:** Public
-- **Suggested reward:** Access to extra writing templates.
+- **Perk:** Access to extra writing templates.
 
 ---
 
@@ -70,7 +74,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Submit 20 review requests and accept at least 10 suggestions.
 - **Rarity:** Common
 - **Visibility:** Public
-- **Suggested reward:** "Reviewer" filter in content explorer.
+- **Perk:** "Reviewer" filter in content explorer.
 
 ---
 
@@ -80,7 +84,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Use Zylo across 7 consecutive days or perform 200 actions (any).
 - **Rarity:** Rare
 - **Visibility:** Public
-- **Suggested reward:** Small cosmetic flair and badge highlight.
+- **Perk:** Small cosmetic flair and badge highlight.
 
 ---
 
@@ -90,7 +94,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Create account and complete onboarding checklist.
 - **Rarity:** Very common
 - **Visibility:** Public
-- **Suggested reward:** Starter tips and zero-cost credits (if applicable).
+- **Perk:** Starter tips and zero-cost credits (if applicable).
 
 ---
 
@@ -100,7 +104,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Use 5 different features (chat, explore, moments, groups, cloud upload).
 - **Rarity:** Common
 - **Visibility:** Public
-- **Suggested reward:** Unlock a special sticker pack.
+- **Perk:** Unlock a special sticker pack.
 
 ---
 
@@ -110,7 +114,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Account age ≥ 180 days OR total login days ≥ 60.
 - **Rarity:** Rare
 - **Visibility:** Public
-- **Suggested reward:** "Veteran" accent border on avatar.
+- **Perk:** "Veteran" accent border on avatar.
 
 ---
 
@@ -120,7 +124,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** 50 actions between 00:00–05:00 local time.
 - **Rarity:** Uncommon
 - **Visibility:** Public / optional
-- **Suggested reward:** Night mode theme unlocked.
+- **Perk:** Night mode theme unlocked.
 
 ---
 
@@ -130,7 +134,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** >70% of requests routed to Diszi models over 30 sessions.
 - **Rarity:** Uncommon
 - **Visibility:** Public
-- **Suggested reward:** Priority model routing tip and advanced settings.
+- **Perk:** Priority model routing tip and advanced settings.
 
 ---
 
@@ -140,7 +144,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** >70% usage of Zily modes for 30 sessions.
 - **Rarity:** Uncommon
 - **Visibility:** Public
-- **Suggested reward:** Extra writing voice presets.
+- **Perk:** Extra writing voice presets.
 
 ---
 
@@ -150,7 +154,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Email verified OR additional verification steps completed.
 - **Rarity:** Common
 - **Visibility:** Public
-- **Suggested reward:** Trusted tag, higher upload limits.
+- **Perk:** Trusted tag, higher upload limits, a verified checkmark nexus to username.
 
 ---
 
@@ -160,7 +164,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** File 3 accepted bug reports or help triage issues with useful reproduction steps.
 - **Rarity:** Rare
 - **Visibility:** Public
-- **Suggested reward:** Early access to betas.
+- **Perk:** Early access to betas.
 
 ---
 
@@ -170,7 +174,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Linked GitHub PR merged OR contributed assets adopted in repo.
 - **Rarity:** Very rare
 - **Visibility:** Public
-- **Suggested reward:** Contributor flair + credits in README.
+- **Perk:** Contributor flair + credits in README.
 
 ---
 
@@ -180,7 +184,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Complete first chat (send 1 message & receive reply).
 - **Rarity:** Very common
 - **Visibility:** Public
-- **Suggested reward:** Welcome tutorial unlocked.
+- **Perk:** Welcome tutorial unlocked.
 
 ---
 
@@ -190,7 +194,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** 100 messages sent (DMs + community).
 - **Rarity:** Common
 - **Visibility:** Public
-- **Suggested reward:** Extra sticker pack.
+- **Perk:** Extra sticker pack.
 
 ---
 
@@ -200,7 +204,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Ask 10 multi-step requests where AI returns a plan with ≥5 steps.
 - **Rarity:** Uncommon
 - **Visibility:** Public
-- **Suggested reward:** Access to advanced planning templates.
+- **Perk:** Access to advanced planning templates.
 
 ---
 
@@ -210,17 +214,17 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** Create 5 prompts that are marked "helpful" or "favorite" by the user or others.
 - **Rarity:** Common
 - **Visibility:** Public
-- **Suggested reward:** Special avatar frame.
+- **Perk:** Special avatar frame.
 
 ---
 
 ### 20. Offline Survivor
-- **Icon:** 📴 (phone-off)
+- **Icon:** 🔌 (or something related)
 - **Description:** Used Zylo in offline / local fallback mode.
 - **Unlock criteria:** Use Strands or local-only mode for 5 sessions or more.
 - **Rarity:** Uncommon
 - **Visibility:** Public / optional
-- **Suggested reward:** Offline tips & cache increase.
+- **Perk:** Offline tips & cache increase.
 
 ---
 
@@ -230,7 +234,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** >60% of AI sessions routed through cloud models over 30 sessions.
 - **Rarity:** Common
 - **Visibility:** Public
-- **Suggested reward:** Model usage insights dashboard.
+- **Perk:** Model usage insights dashboard.
 
 ---
 
@@ -240,7 +244,168 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 - **Unlock criteria:** >60% of sessions use local Ollama for 30 sessions.
 - **Rarity:** Uncommon
 - **Visibility:** Public
-- **Suggested reward:** Local-only tips and optimizations.
+- **Perk:** Local-only tips and optimizations.
+
+---
+
+### 23. Architect
+- **Icon:** 🏗️ (or something related)
+- **Description:** Creator of Zylo.
+- **Unlock criteria:** Manual assignment only (```user role = developer```)
+- **Rarity:** ???
+- **Visibility:** Public
+- **Perk:** Gold name highlight + crown aura
+
+---
+
+### 24. Core Maintainer
+- **Icon:** 🧬
+- **Description:** Maintains core AI or backend systems.
+- **Unlock criteria:** Linked GitHub account with merged PRs in core/ directory.
+- **Rarity:** Mythic
+- **Visibility:** Public
+- **Perk:** Special badge glow animation
+
+---
+
+### 25. System Override
+- **Icon:** 🛡️⚙️
+- **Description:** Has admin-level access.
+- **Unlock criteria:** Role = ```admin```
+- **Rarity:** Legendary
+- **Visibility:** Public (optional hidden)
+- **Perk:** Admin flair
+
+---
+
+### 26. Origin
+- **Icon:** 🌌
+- **Description:** Account created before public launch.
+- **Unlock criteria:** created_at < PUBLIC_RELEASE_DATE
+- **Rarity:** Mythic
+- **Visibility:** Public
+- **Perk:** Massive flex badge.
+
+---
+
+### Message Master Series
+- 27. Chatter I
+> **Unlock criteria:** messages sended (In any chats)
+> **Rarity:** Uncommon
+- 28. Chatter II
+> **Unlock criteria:** 1,000 messages sended (In any chats)
+> **Rarity:** Rare
+- 29. Chatter III
+> **Unlock criteria:** 5,000 messages sended (In any chats)
+> **Rarity:** Epic
+- 30. Chatter IV
+> **Unlock criteria:** 10,000 messages sended (In any chats)
+> **Rarity:** Legendary
+
+---
+
+### Code Warrior Series
+- 31. Code Apprentice
+> **Unlock criteria:** 25 code requests
+> **Rarity:** Uncommon
+> **Perk:** Nothing
+- 32. Code Adept
+> **Unlock criteria:** 100 code requests
+> **Rarity:** Rare
+> **Perk:** GitHub badge
+- 33. Code Master
+> **Unlock criteria:** 500 code requests
+> **Rarity:** Epic
+> **Perk:** GitLens badge
+- 34. Code Overlord
+> **Unlock criteria:** 1,500+ code requests
+> **Rarity:** Legendary
+> **Perk:** Animated badge
+
+---
+
+### 35. The Glitch
+- **Unlock criteria:** Trigger a specific hidden easter egg phrase
+- **Description:** hidden until unlocked
+- **Rarity:** ???
+- **Perk:** Can unlocked the next badges
+
+---
+
+### 36. Speedrunner
+- **Unlock criteria:** Complete onboarding in under 3 minutes
+- **Description:** hidden until unlocked
+- **Rarity:** ???
+- **Perk:** Can unlocked the next badges
+
+---
+
+### 37. The Silent One
+- **Unlock criteria:** Use app for 30 days without posting in public chat
+- **Description:** hidden until unlocked
+- **Rarity:** ???
+- **Perk:** Can unlocked the next badges
+
+---
+
+### 38. Chaos Mode
+- **Unlock criteria:** Switch between Diszi and Zily 50 times in one session
+- **Description:** hidden until unlocked
+- **Rarity:** ???
+- **Perk:** Can unlocked the next badges
+
+---
+
+### 39. The Dual Mind
+- **Unlock criteria:** Balanced usage: 50% Diszi, 50% Zily over 100 sessions
+- **Description:** hidden until unlocked
+- **Rarity:** ???
+- **Perk:** Can unlocked the next badges
+
+---
+
+### 40. Community Helper
+- **Unlock criteria:** Marked helpful by 10 users
+
+---
+
+### 41. Trend Starter
+- **Unlock criteria:** Prompt copied/used by 20 users
+
+---
+
+### 42. Beta Explorer
+- **Unlock criteria:** Used beta model 20 times
+
+---
+
+### 43. Cloud Pioneer
+- **Unlock criteria:** First *100* users to use OpenRouter integration
+
+---
+
+### 44. Local Titan
+- **Unlock criteria:** Runs 7B+ local model consistently
+
+---
+
+### 45. The 1%
+- **Unlock criteria:** Top 1% of activity in last 30 days
+
+---
+
+### 46. AI Whisperer
+- **Unlock criteria:** 90%+ helpful rating over 200 sessions
+
+---
+
+### 47. Eternal
+- **Unlock criteria:** 365-day login streak (Offline doesn't count)
+
+---
+
+### 48. Mythic Mind
+- **Unlock criteria:** Unlock 30+ total badges
 
 ---
 
