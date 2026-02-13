@@ -347,5 +347,5 @@ BY CLICKING "I AGREE," CREATING AN ACCOUNT, OR USING THE SERVICE, YOU ACKNOWLEDG
 
 ---
 
-**Version:** 2.0 
+**Version:** 2.0  
 **Effective:** January 4, 202626
