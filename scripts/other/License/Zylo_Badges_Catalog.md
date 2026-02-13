@@ -281,7 +281,7 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 ### 26. Origin
 - **Icon:** 🌌
 - **Description:** Account created before public launch.
-- **Unlock criteria:** created_at < PUBLIC_RELEASE_DATE
+- **Unlock criteria:** ```created_at``` < ```PUBLIC_RELEASE_DATE```
 - **Rarity:** Mythic
 - **Visibility:** Public
 - **Perk:** Massive flex badge.
@@ -289,38 +289,38 @@ _A comprehensive badge catalogue for Zylo. Use this as a reference for product, 
 ---
 
 ### Message Master Series
-- 27. Chatter I
-> **Unlock criteria:** messages sended (In any chats)
-> **Rarity:** Uncommon
-- 28. Chatter II
-> **Unlock criteria:** 1,000 messages sended (In any chats)
-> **Rarity:** Rare
-- 29. Chatter III
-> **Unlock criteria:** 5,000 messages sended (In any chats)
-> **Rarity:** Epic
-- 30. Chatter IV
-> **Unlock criteria:** 10,000 messages sended (In any chats)
-> **Rarity:** Legendary
+27. Chatter I
+- **Unlock criteria:** messages sended (In any chats)
+- **Rarity:** Uncommon
+28. Chatter II
+- **Unlock criteria:** 1,000 messages sended (In any chats)
+- **Rarity:** Rare
+29. Chatter III
+- **Unlock criteria:** 5,000 messages sended (In any chats)
+- **Rarity:** Epic
+30. Chatter IV
+- **Unlock criteria:** 10,000 messages sended (In any chats)
+- **Rarity:** Legendary
 
 ---
 
 ### Code Warrior Series
-- 31. Code Apprentice
-> **Unlock criteria:** 25 code requests
-> **Rarity:** Uncommon
-> **Perk:** Nothing
-- 32. Code Adept
-> **Unlock criteria:** 100 code requests
-> **Rarity:** Rare
-> **Perk:** GitHub badge
-- 33. Code Master
-> **Unlock criteria:** 500 code requests
-> **Rarity:** Epic
-> **Perk:** GitLens badge
-- 34. Code Overlord
-> **Unlock criteria:** 1,500+ code requests
-> **Rarity:** Legendary
-> **Perk:** Animated badge
+31. Code Apprentice
+- **Unlock criteria:** 25 code requests
+- **Rarity:** Uncommon
+- **Perk:** Nothing
+32. Code Adept
+- **Unlock criteria:** 100 code requests
+- **Rarity:** Rare
+- **Perk:** GitHub badge
+33. Code Master
+- **Unlock criteria:** 500 code requests
+- **Rarity:** Epic
+- **Perk:** GitLens badge
+34. Code Overlord
+- **Unlock criteria:** 1,500+ code requests
+- **Rarity:** Legendary
+- **Perk:** Animated badge
 
 ---
 
