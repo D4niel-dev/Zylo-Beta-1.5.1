@@ -619,7 +619,7 @@ html.dark .ai-thought-header:hover {
   color: #475569; /* Light mode text */
   border-top: 1px solid rgba(0, 0, 0, 0.05);
   background: rgba(0, 0, 0, 0.02);
-  font-family: 'Consolas', 'Monaco', monospace;
+  font-family: "Consolas", "Monaco", monospace;
   line-height: 1.5;
   white-space: pre-wrap;
   position: relative;
@@ -633,7 +633,7 @@ html.dark .ai-thought-content {
 
 /* Hide ::before/animations from old style */
 details.ai-thought::before {
-  display: none; 
+  display: none;
 }
 
 .ai-thought-content::before {
@@ -747,7 +747,7 @@ details.ai-thought::before {
   padding: 14px 16px;
   margin: 10px 0;
   overflow-x: auto;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
   font-size: 0.8rem;
   line-height: 1.6;
   color: var(--ai-text);
@@ -758,7 +758,7 @@ details.ai-thought::before {
 html.dark .ai-md-codeblock {
   background: rgba(0, 0, 0, 0.5); /* Dark mode */
   color: #e2e8f0;
-  scrollbar-color: rgba(255,255,255,0.15) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
 .ai-md-codeblock code {
@@ -775,7 +775,7 @@ html.dark .ai-md-codeblock {
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 0.82em;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
   color: #93c5fd;
   border: 1px solid rgba(59, 130, 246, 0.15);
 }
@@ -789,4 +789,152 @@ html.dark .ai-md-codeblock {
   color: #94a3b8;
   border-radius: 0 6px 6px 0;
   font-style: italic;
+}
+
+/* === Mobile AI Chat Optimizations === */
+@media (max-width: 768px) {
+  /* Reduce side padding to give more room */
+  .chat-messages {
+    padding: 1rem 0.5rem !important;
+    /* Add huge bottom padding so fixed input doesn't cover last message */
+    padding-bottom: 160px !important;
+  }
+
+  /* Widen messages on mobile */
+  .message {
+    max-width: 88% !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Thinking process should take full width available */
+  details.ai-thought {
+    margin-left: -4px;
+    margin-right: -4px;
+    border-radius: 4px;
+  }
+
+  .ai-thought-content {
+    font-size: 0.8rem !important;
+    padding: 10px !important;
+  }
+
+  /* Code blocks needs to scroll */
+  .ai-md-codeblock {
+    margin: 8px -4px; /* Pull out slightly */
+    border-radius: 6px;
+    font-size: 0.75rem !important;
+  }
+
+  /* Ensure welcome screen fits */
+  .ai-welcome-screen h1 {
+    font-size: 1.5rem !important;
+  }
+
+  /* Fix table truncation and cramping on mobile */
+  .ai-md-table {
+    display: block !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ai-md-table th, 
+  .ai-md-table td {
+    padding: 8px 6px !important;
+    font-size: 0.45rem !important;
+    white-space: nowrap; /* Prevent wrapping to force horizontal scroll if content is wide */
+  }
+}
+
+/* === AI Message Actions === */
+.ai-msg-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  margin-left: 54px; /* Align with text (avatar width + gap) */
+  opacity: 0;
+  animation: fadeIn 0.5s ease 0.5s forwards; /* Delay slightly */
+}
+
+@media (max-width: 768px) {
+    .ai-msg-actions {
+        margin-left: 0;
+        justify-content: flex-end;
+    }
+}
+
+.ai-action-btn {
+  background: transparent; /* Clean look */
+  border: 1px solid transparent;
+  color: #94a3b8;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem; /* Small but readable */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.ai-action-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+}
+
+.ai-action-btn.like:hover {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.ai-action-btn.dislike:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.ai-action-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Toast Notification */
+.ai-toast {
+  position: fixed;
+  bottom: 120px; /* Above input area */
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(31, 41, 55, 0.95);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 99px; /* Pill shape */
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 2000;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.ai-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.ai-toast i {
+  color: #22c55e;
+}
+
+/* Light Mode Overrides */
+body:not(.dark) .ai-action-btn {
+  color: #64748b; /* Slate-500 */
+}
+
+body:not(.dark) .ai-action-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #334155; /* Slate-700 */
 }

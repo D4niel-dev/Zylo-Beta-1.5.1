@@ -1,638 +1,795 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zylo | Login</title>
-  <link rel="icon" href="/images/zylo/Zylo_icon.ico" type="image/x-icon" />
-  <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#0d0d1a" />
-  <script src="/files/vendor/tailwindcss.js"></script>
-  <script src="/files/vendor/feather-icons.js"></script>
-  <script src="/files/vendor/heroicons.js"></script>
-  <script src="/files/js/translations.js"></script>
-  <link rel="stylesheet" href="/css/global.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            display: ['Sora', 'sans-serif'],
-            body: ['DM Sans', 'sans-serif'],
-          },
-          animation: {
-            fadeUp: 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-            float: 'float 6s ease-in-out infinite',
-            ringPulse: 'ringPulse 3s ease-in-out infinite',
-          },
-          keyframes: {
-            fadeUp: {
-              '0%': { opacity: '0', transform: 'translateY(30px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zylo | Login</title>
+    <link rel="icon" href="/images/zylo/Zylo_icon.ico" type="image/x-icon" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#0d0d1a" />
+    <script src="/files/vendor/tailwindcss.js"></script>
+    <script src="/files/vendor/feather-icons.js"></script>
+    <script src="/files/vendor/heroicons.js"></script>
+    <script src="/files/js/translations.js"></script>
+    <link rel="stylesheet" href="/css/global.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ["Sora", "sans-serif"],
+              body: ["DM Sans", "sans-serif"],
             },
-            float: {
-              '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
-              '50%': { transform: 'translateY(-15px) rotate(3deg)' }
+            animation: {
+              fadeUp: "fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+              float: "float 6s ease-in-out infinite",
+              ringPulse: "ringPulse 3s ease-in-out infinite",
             },
-            ringPulse: {
-              '0%, 100%': { boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.5)' },
-              '50%': { boxShadow: '0 0 0 12px rgba(59, 130, 246, 0)' }
-            }
-          }
-        }
+            keyframes: {
+              fadeUp: {
+                "0%": { opacity: "0", transform: "translateY(30px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              },
+              float: {
+                "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
+                "50%": { transform: "translateY(-15px) rotate(3deg)" },
+              },
+              ringPulse: {
+                "0%, 100%": { boxShadow: "0 0 0 0 rgba(59, 130, 246, 0.5)" },
+                "50%": { boxShadow: "0 0 0 12px rgba(59, 130, 246, 0)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: linear-gradient(
+          145deg,
+          #0d0d1a 0%,
+          #1a1a2e 50%,
+          #16213e 100%
+        );
+        min-height: 100vh;
+        overflow-x: hidden;
       }
-    };
-  </script>
-  <style>
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: linear-gradient(145deg, #0d0d1a 0%, #1a1a2e 50%, #16213e 100%);
-      min-height: 100vh;
-      overflow-x: hidden;
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image:
+          radial-gradient(
+            circle at 20% 30%,
+            rgba(59, 130, 246, 0.05) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 70%,
+            rgba(99, 102, 241, 0.05) 0%,
+            transparent 50%
+          ),
+          url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: -1;
+      }
+      .card-glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow:
+          0 25px 50px -12px rgba(0, 0, 0, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transform: scale(0.95);
+        transform-origin: center;
+      }
+      .input-field {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .input-field:focus {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(59, 130, 246, 0.5);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+      .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s ease;
+      }
+      .btn-primary:hover::before {
+        left: 100%;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.5);
+      }
+      .btn-primary:disabled {
+        transform: none;
+        box-shadow: none;
+      }
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      .floating-icon {
+        position: absolute;
+        opacity: 0.08;
+        color: #3b82f6;
+      }
+      .wave-bottom {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        background: linear-gradient(
+          0deg,
+          rgba(59, 130, 246, 0.08) 0%,
+          transparent 100%
+        );
+        pointer-events: none;
+      }
+      .avatar-ring {
+        animation: ringPulse 3s ease-in-out infinite;
+      }
+      .social-btn {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.2s ease;
+      }
+      .social-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+      }
+      .error-msg {
+        color: #f87171;
+      }
+      .password-toggle:hover {
+        color: #3b82f6;
+      }
+      /* Compact overrides removed */
+    /* Desktop Compact Overrides - applies only to screens wider than 768px */
+    @media (min-width: 768px) {
+      body { font-size: 13px !important; }
+      .card-glass { padding: 1.5rem !important; max-width: 360px !important; }
+      .input-field { padding: 0.5rem 0.75rem !important; font-size: 0.85rem !important; border-radius: 0.5rem !important; }
+      .btn-primary, .btn-secondary { padding: 0.6rem 1rem !important; font-size: 0.9rem !important; border-radius: 0.5rem !important; }
+      h1 { font-size: 1.5rem !important; margin-bottom: 0.75rem !important; }
+      .avatar-ring { width: 4rem !important; height: 4rem !important; }
+      /* Tighter spacing overrides */
+      #login-inputs > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem !important; }
+      #social-login-container { margin-top: 1rem !important; }
+      footer { margin-top: 1rem !important; }
+      .floating-icon { display: none !important; } /* Hide floating icons on desktop to reduce noise/space */
     }
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-image: 
-        radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
-        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: -1;
-    }
-    .card-glass {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      transform: scale(0.95);
-      transform-origin: center;
-    }
-    .input-field {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .input-field:focus {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(59, 130, 246, 0.5);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s ease;
-    }
-    .btn-primary::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%; width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s ease;
-    }
-    .btn-primary:hover::before { left: 100%; }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.5);
-    }
-    .btn-primary:disabled { transform: none; box-shadow: none; }
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-    }
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-    .floating-icon {
-      position: absolute;
-      opacity: 0.08;
-      color: #3b82f6;
-    }
-    .wave-bottom {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 120px;
-      background: linear-gradient(0deg, rgba(59, 130, 246, 0.08) 0%, transparent 100%);
-      pointer-events: none;
-    }
-    .avatar-ring {
-      animation: ringPulse 3s ease-in-out infinite;
-    }
-    .social-btn {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.2s ease;
-    }
-    .social-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.15);
-      transform: translateY(-2px);
-    }
-    .error-msg { color: #f87171; }
-    .password-toggle:hover { color: #3b82f6; }
-    /* Compact overrides */
-    body { font-size: 14px; }
-    .card-glass { padding: 1.5rem !important; max-width: 360px !important; }
-    .input-field { padding: 0.5rem 0.75rem !important; font-size: 0.875rem !important; border-radius: 0.5rem !important; }
-    .btn-primary, .btn-secondary { padding: 0.6rem 1rem !important; font-size: 0.875rem !important; border-radius: 0.5rem !important; }
-    h1 { font-size: 1.5rem !important; margin-bottom: 1rem !important; }
-    .avatar-ring { width: 6rem !important; height: 6rem !important; }
-    .floating-icon { transform: scale(0.6); }
-    .social-btn img { width: 1.25rem !important; height: 1.25rem !important; }
-  </style>
-</head>
+    </style>
+  </head>
 
-<body id="body" class="min-h-screen flex flex-col items-center justify-center px-4 text-white">
-
-  <!-- Floating Decorative Icons -->
-  <div class="floating-icon animate-float" style="top: 15%; left: 8%; font-size: 4rem;">
-    <i data-feather="user"></i>
-  </div>
-  <div class="floating-icon animate-float" style="top: 55%; right: 10%; font-size: 3rem; animation-delay: -2s;">
-    <i data-feather="key"></i>
-  </div>
-  <div class="floating-icon animate-float" style="bottom: 20%; left: 12%; font-size: 2.5rem; animation-delay: -4s;">
-    <i data-feather="shield"></i>
-  </div>
-
-  <!-- Wave Bottom -->
-  <div class="wave-bottom"></div>
-
-  <!-- Top Controls -->
-  <div class="absolute top-5 right-5 z-50 flex gap-3">
-    <select id="pageLanguageSelect" onchange="window.setLanguage(this.value)"
-      class="bg-white/5 backdrop-blur-md text-gray-300 px-3 py-1.5 rounded-lg text-sm border border-white/10 focus:outline-none focus:border-blue-400/50 cursor-pointer hover:bg-white/10 transition-colors">
-      <option value="en" class="bg-gray-900">English</option>
-      <option value="es" class="bg-gray-900">Español</option>
-      <option value="vi" class="bg-gray-900">Tiếng Việt</option>
-    </select>
-    <button id="toggleTheme" aria-label="Toggle Dark Mode"
-      class="flex items-center gap-1.5 bg-white/5 backdrop-blur-md text-gray-300 px-3 py-1.5 rounded-lg text-sm border border-white/10 hover:bg-white/10 transition-colors">
-      <i id="themeIcon" data-feather="sun" class="w-4 h-4"></i>
-      <span id="themeText" class="hidden sm:inline">Light</span>
-    </button>
-  </div>
-
-  <!-- Main Card -->
-  <div class="w-full max-w-md p-8 rounded-2xl card-glass animate-fadeUp" style="animation-delay: 0.1s;">
-    
-    <!-- Avatar -->
-    <div class="flex justify-center mb-5">
-      <img id="loginAvatar" src="/images/default_avatar.png" alt="User Avatar"
-        class="w-16 h-16 rounded-full shadow-xl ring-2 ring-blue-500/30 avatar-ring object-cover" />
+  <body
+    id="body"
+    class="min-h-screen flex flex-col items-center justify-center px-4 text-white"
+  >
+    <!-- Floating Decorative Icons -->
+    <div
+      class="floating-icon animate-float"
+      style="top: 15%; left: 8%; font-size: 4rem"
+    >
+      <i data-feather="user"></i>
+    </div>
+    <div
+      class="floating-icon animate-float"
+      style="top: 55%; right: 10%; font-size: 3rem; animation-delay: -2s"
+    >
+      <i data-feather="key"></i>
+    </div>
+    <div
+      class="floating-icon animate-float"
+      style="bottom: 20%; left: 12%; font-size: 2.5rem; animation-delay: -4s"
+    >
+      <i data-feather="shield"></i>
     </div>
 
-    <!-- Header -->
-    <h1 class="font-display text-3xl font-bold tracking-tight text-center mb-6" data-i18n="auth.welcomeBack">
-      Welcome back!
-    </h1>
+    <!-- Wave Bottom -->
+    <div class="wave-bottom"></div>
 
-    <!-- Login Inputs -->
-    <div id="login-inputs" class="space-y-4">
-      <div>
-        <label for="username" class="block text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-1">Account</label>
-        <input id="username" type="text" placeholder="Username or Email" data-i18n-placeholder="auth.usernameOrEmail" aria-label="Username or Email"
-          class="input-field w-full px-3 py-2 rounded-lg text-white placeholder-gray-500 focus:outline-none font-body" />
-      </div>
-
-      <div>
-        <label for="password" class="block text-[10px] font-medium text-gray-400 uppercase tracking-wider mb-1">Password</label>
-        <div class="relative">
-          <input id="password" type="password" placeholder="Password" data-i18n-placeholder="auth.password" aria-label="Password"
-            class="input-field w-full px-3 py-2 pr-10 rounded-lg text-white placeholder-gray-500 focus:outline-none font-body" />
-          <span id="togglePassword" role="button" tabindex="0" aria-label="Toggle password visibility"
-            class="password-toggle absolute top-1/2 -translate-y-1/2 right-3 text-gray-400 cursor-pointer">
-            <i id="eyeIcon" data-feather="eye" class="w-4 h-4"></i>
-          </span>
-        </div>
-        <p id="capsWarn" role="alert" class="text-[10px] text-amber-400 mt-0.5 hidden">⚠ Caps Lock is ON</p>
-      </div>
+    <!-- Top Controls -->
+    <div class="absolute top-5 right-5 z-50 flex gap-3">
+      <select
+        id="pageLanguageSelect"
+        onchange="window.setLanguage(this.value)"
+        class="bg-white/5 backdrop-blur-md text-gray-300 px-3 py-1.5 rounded-lg text-sm border border-white/10 focus:outline-none focus:border-blue-400/50 cursor-pointer hover:bg-white/10 transition-colors"
+      >
+        <option value="en" class="bg-gray-900">English</option>
+        <option value="es" class="bg-gray-900">Español</option>
+        <option value="vi" class="bg-gray-900">Tiếng Việt</option>
+      </select>
+      <button
+        id="toggleTheme"
+        aria-label="Toggle Dark Mode"
+        class="flex items-center gap-1.5 bg-white/5 backdrop-blur-md text-gray-300 px-3 py-1.5 rounded-lg text-sm border border-white/10 hover:bg-white/10 transition-colors"
+      >
+        <i id="themeIcon" data-feather="sun" class="w-4 h-4"></i>
+        <span id="themeText" class="hidden sm:inline">Light</span>
+      </button>
     </div>
 
-    <!-- 2FA Section (hidden by default) -->
-    <div id="twofa-section" class="hidden space-y-4" aria-live="polite">
-      <div class="text-center py-2">
-        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-500/10 mb-3">
-          <i data-feather="shield" class="w-6 h-6 text-green-400"></i>
-        </div>
-        <p class="text-sm text-gray-400" data-i18n="auth.enterCode">Enter your 2FA code</p>
+    <!-- Main Card -->
+    <div class="w-full max-w-[420px] p-8 sm:p-10 rounded-3xl card-glass animate-fadeUp" style="animation-delay: 0.1s;">
+      
+      <!-- Avatar -->
+      <div class="flex justify-center mb-5">
+        <img id="loginAvatar" src="/images/default_avatar.png" alt="User Avatar"
+          class="w-20 h-20 rounded-full shadow-2xl ring-4 ring-blue-500/20 avatar-ring object-cover" />
       </div>
-      <input id="twofa-code" type="text" maxlength="6" placeholder="000000" aria-label="2FA Code"
-        class="input-field w-full px-4 py-3 rounded-xl text-white text-center text-2xl tracking-[0.5em] font-mono focus:outline-none" />
-      <button id="verify2faBtn" onclick="verify2FA()" aria-label="Verify 2FA Code"
-        class="btn-primary w-full py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2">
-        <svg id="verify2faSpinner" class="w-5 h-5 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+
+      <!-- Header -->
+      <h1 class="font-display text-3xl font-bold tracking-tight text-center mb-6" data-i18n="auth.welcomeBack">
+        Welcome back!
+      </h1>
+
+      <!-- Login Inputs -->
+      <div id="login-inputs" class="space-y-5">
+        <div>
+          <label for="username" class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-1.5 ml-1">Account</label>
+          <input id="username" type="text" placeholder="Username or Email" data-i18n-placeholder="auth.usernameOrEmail" aria-label="Username or Email"
+            class="input-field w-full px-4 py-3.5 rounded-xl text-white placeholder-gray-500 focus:outline-none font-body text-base transition-all" />
+        </div>
+
+        <div>
+          <label for="password" class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-1.5 ml-1">Password</label>
+          <div class="relative">
+            <input id="password" type="password" placeholder="Password" data-i18n-placeholder="auth.password" aria-label="Password"
+              class="input-field w-full px-4 py-3.5 pr-12 rounded-xl text-white placeholder-gray-500 focus:outline-none font-body text-base transition-all" />
+            <span id="togglePassword" role="button" tabindex="0" aria-label="Toggle password visibility"
+              class="password-toggle absolute top-1/2 -translate-y-1/2 right-4 text-gray-400 cursor-pointer p-1 hover:text-white transition-colors">
+              <i id="eyeIcon" data-feather="eye" class="w-5 h-5"></i>
+            </span>
+          </div>
+          <p id="capsWarn" role="alert" class="text-xs text-amber-400 mt-1.5 hidden flex items-center gap-1">
+            <i data-feather="alert-triangle" class="w-3 h-3"></i> Caps Lock is ON
+          </p>
+        </div>
+      </div>
+
+      <!-- 2FA Section (hidden by default) -->
+      <div id="twofa-section" class="hidden space-y-4" aria-live="polite">
+        <div class="text-center py-2">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-500/10 mb-3">
+            <i data-feather="shield" class="w-6 h-6 text-green-400"></i>
+          </div>
+          <p class="text-sm text-gray-400" data-i18n="auth.enterCode">Enter your 2FA code</p>
+        </div>
+        <input id="twofa-code" type="text" maxlength="6" placeholder="000000" aria-label="2FA Code"
+          class="input-field w-full px-4 py-3 rounded-xl text-white text-center text-2xl tracking-[0.5em] font-mono focus:outline-none" />
+        <button id="verify2faBtn" onclick="verify2FA()" aria-label="Verify 2FA Code"
+          class="btn-primary w-full py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2">
+          <svg id="verify2faSpinner" class="w-5 h-5 animate-spin hidden" fill="none" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
+            <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" class="opacity-75"/>
+          </svg>
+          <span id="verify2faBtnText" data-i18n="auth.verify">Verify</span>
+        </button>
+        <button onclick="reset2FAFlow()" class="w-full text-sm text-blue-400 hover:text-blue-300 transition-colors" data-i18n="auth.backToLogin">
+          Back to login
+        </button>
+      </div>
+
+      <!-- Remember Me -->
+      <div class="flex items-center gap-2 mt-4 text-sm text-gray-400">
+        <input type="checkbox" id="rememberMe" class="accent-blue-500 w-4 h-4" aria-label="Remember me" />
+        <label for="rememberMe" data-i18n="auth.rememberMe">Remember me</label>
+      </div>
+
+      <!-- Login Button -->
+      <button id="loginBtn" onclick="login()" aria-label="Sign In"
+        class="btn-primary w-full py-4 mt-6 rounded-xl font-bold text-white text-lg shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-blue-500/40 transition-all">
+        <svg id="loginSpinner" class="w-5 h-5 animate-spin hidden" fill="none" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
           <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" class="opacity-75"/>
         </svg>
-        <span id="verify2faBtnText" data-i18n="auth.verify">Verify</span>
+        <span id="loginBtnText" data-i18n="auth.signIn">Sign In</span>
       </button>
-      <button onclick="reset2FAFlow()" class="w-full text-sm text-blue-400 hover:text-blue-300 transition-colors" data-i18n="auth.backToLogin">
-        Back to login
+
+      <!-- Biometric Login -->
+      <button id="bioLoginBtn" onclick="bioLogin()"
+        class="hidden w-full mt-3 py-3.5 rounded-xl font-medium text-gray-300 btn-secondary flex items-center justify-center gap-2 hover:bg-white/5 transition-all">
+        <i data-feather="key" class="w-4 h-4"></i>
+        <span id="bioLoginBtnText" data-i18n="auth.signInWithPasskey">Sign in with Passkey</span>
       </button>
-    </div>
 
-    <!-- Remember Me -->
-    <div class="flex items-center gap-2 mt-4 text-sm text-gray-400">
-      <input type="checkbox" id="rememberMe" class="accent-blue-500 w-4 h-4" aria-label="Remember me" />
-      <label for="rememberMe" data-i18n="auth.rememberMe">Remember me</label>
-    </div>
+      <!-- Error Message -->
+      <p id="error-msg" role="alert" class="error-msg text-sm text-center mt-4 hidden flex items-center justify-center gap-1.5"></p>
 
-    <!-- Login Button -->
-    <button id="loginBtn" onclick="login()" aria-label="Sign In"
-      class="btn-primary w-full py-3.5 mt-5 rounded-xl font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-      <svg id="loginSpinner" class="w-5 h-5 animate-spin hidden" fill="none" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/>
-        <path d="M4 12a8 8 0 018-8" stroke="currentColor" stroke-width="4" class="opacity-75"/>
-      </svg>
-      <span id="loginBtnText" data-i18n="auth.signIn">Sign In</span>
-    </button>
-
-    <!-- Biometric Login -->
-    <button id="bioLoginBtn" onclick="bioLogin()"
-      class="hidden w-full mt-3 py-3 rounded-xl font-medium text-gray-300 btn-secondary flex items-center justify-center gap-2">
-      <i data-feather="key" class="w-4 h-4"></i>
-      <span id="bioLoginBtnText" data-i18n="auth.signInWithPasskey">Sign in with Passkey</span>
-    </button>
-
-    <!-- Error Message -->
-    <p id="error-msg" role="alert" class="error-msg text-sm text-center mt-4 hidden flex items-center justify-center gap-1.5"></p>
-
-    <!-- Social Login -->
-    <div id="social-login-container" class="mt-6">
-      <div class="flex items-center gap-3 text-sm text-gray-500 mb-4">
-        <hr class="flex-grow border-white/10" />
-        <span data-i18n="auth.orSignInWith">or sign in with</span>
-        <hr class="flex-grow border-white/10" />
+      <!-- Social Login -->
+      <div id="social-login-container" class="mt-6">
+        <div class="flex items-center gap-3 text-sm text-gray-500 mb-4">
+          <hr class="flex-grow border-white/10" />
+          <span data-i18n="auth.orSignInWith">or sign in with</span>
+          <hr class="flex-grow border-white/10" />
+        </div>
+        <div class="grid grid-cols-4 gap-3">
+          <button onclick="socialLogin('Google')" aria-label="Sign in with Google" class="social-btn p-3 rounded-xl flex justify-center">
+            <img src="/images/devicons/google-original.svg" alt="Google" class="w-5 h-5" />
+          </button>
+          <button onclick="socialLogin('GitHub')" aria-label="Sign in with GitHub" class="social-btn p-3 rounded-xl flex justify-center">
+            <img src="/images/devicons/github-original.svg" alt="GitHub" class="w-5 h-5" />
+          </button>
+          <button onclick="socialLogin('Discord')" aria-label="Sign in with Discord" class="social-btn p-3 rounded-xl flex justify-center">
+            <img src="/images/devicons/discordjs-original.svg" alt="Discord" class="w-5 h-5" />
+          </button>
+          <button onclick="socialLogin('Microsoft')" aria-label="Sign in with Microsoft" class="social-btn p-3 rounded-xl flex justify-center">
+            <img src="/images/devicons/windows8-original.svg" alt="Microsoft" class="w-5 h-5" />
+          </button>
+        </div>
       </div>
-      <div class="grid grid-cols-4 gap-3">
-        <button onclick="socialLogin('Google')" aria-label="Sign in with Google" class="social-btn p-3 rounded-xl flex justify-center">
-          <img src="/images/devicons/google-original.svg" alt="Google" class="w-5 h-5" />
-        </button>
-        <button onclick="socialLogin('GitHub')" aria-label="Sign in with GitHub" class="social-btn p-3 rounded-xl flex justify-center">
-          <img src="/images/devicons/github-original.svg" alt="GitHub" class="w-5 h-5" />
-        </button>
-        <button onclick="socialLogin('Discord')" aria-label="Sign in with Discord" class="social-btn p-3 rounded-xl flex justify-center">
-          <img src="/images/devicons/discordjs-original.svg" alt="Discord" class="w-5 h-5" />
-        </button>
-        <button onclick="socialLogin('Microsoft')" aria-label="Sign in with Microsoft" class="social-btn p-3 rounded-xl flex justify-center">
-          <img src="/images/devicons/windows8-original.svg" alt="Microsoft" class="w-5 h-5" />
-        </button>
+
+      <!-- Links -->
+      <div class="mt-6 pt-6 border-t border-white/5 text-center text-sm space-y-2">
+        <a href="forgot.html" class="text-blue-400 hover:text-blue-300 transition-colors" data-i18n="auth.forgotPassLink">Forgot your password?</a>
+        <p class="text-gray-500">
+          <span data-i18n="auth.noAccount">Don't have an account?</span>
+          <a href="signup.html" class="text-blue-400 hover:text-blue-300 ml-1 transition-colors" data-i18n="auth.createOne">Create one</a>
+        </p>
       </div>
     </div>
 
-    <!-- Links -->
-    <div class="mt-6 pt-6 border-t border-white/5 text-center text-sm space-y-2">
-      <a href="forgot.html" class="text-blue-400 hover:text-blue-300 transition-colors" data-i18n="auth.forgotPassLink">Forgot your password?</a>
-      <p class="text-gray-500">
-        <span data-i18n="auth.noAccount">Don't have an account?</span>
-        <a href="signup.html" class="text-blue-400 hover:text-blue-300 ml-1 transition-colors" data-i18n="auth.createOne">Create one</a>
-      </p>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer class="mt-8 text-center text-xs text-gray-500">
-    <p class="mb-2">&copy; 2025 Zylo Inc. All rights reserved.</p>
-    <div class="space-x-3">
-      <button type="button" onclick="openModal('pp')" class="text-gray-400 hover:text-blue-400 transition-colors" data-i18n="auth.privacyPolicy">Privacy Policy</button>
-      <span class="text-gray-600">|</span>
-      <button type="button" onclick="openModal('tos')" class="text-gray-400 hover:text-blue-400 transition-colors" data-i18n="auth.termsOfService">Terms of Service</button>
-    </div>
-  </footer>
-
-  <!-- Modal -->
-  <div id="modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center px-4" aria-modal="true" role="dialog" aria-labelledby="modalTitle">
-    <div class="card-glass max-w-2xl w-full p-6 rounded-2xl max-h-[80vh] overflow-hidden flex flex-col">
-      <div class="flex justify-between items-center mb-4">
-        <h3 id="modalTitle" class="font-display text-xl font-semibold text-white">Document</h3>
-        <button onclick="closeModal()" aria-label="Close Modal" class="text-gray-400 hover:text-white transition-colors">
-          <i data-feather="x" class="w-5 h-5"></i>
+    <!-- Footer -->
+    <footer class="mt-8 text-center text-xs text-gray-500">
+      <p class="mb-2">&copy; 2025 Zylo Inc. All rights reserved.</p>
+      <div class="space-x-3">
+        <button
+          type="button"
+          onclick="openModal('pp')"
+          class="text-gray-400 hover:text-blue-400 transition-colors"
+          data-i18n="auth.privacyPolicy"
+        >
+          Privacy Policy
+        </button>
+        <span class="text-gray-600">|</span>
+        <button
+          type="button"
+          onclick="openModal('tos')"
+          class="text-gray-400 hover:text-blue-400 transition-colors"
+          data-i18n="auth.termsOfService"
+        >
+          Terms of Service
         </button>
       </div>
-      <pre id="modalContent" class="text-sm text-gray-300 whitespace-pre-wrap overflow-y-auto flex-1"></pre>
+    </footer>
+
+    <!-- Modal -->
+    <div
+      id="modal"
+      class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center px-4"
+      aria-modal="true"
+      role="dialog"
+      aria-labelledby="modalTitle"
+    >
+      <div
+        class="card-glass max-w-2xl w-full p-6 rounded-2xl max-h-[80vh] overflow-hidden flex flex-col"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h3
+            id="modalTitle"
+            class="font-display text-xl font-semibold text-white"
+          >
+            Document
+          </h3>
+          <button
+            onclick="closeModal()"
+            aria-label="Close Modal"
+            class="text-gray-400 hover:text-white transition-colors"
+          >
+            <i data-feather="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <pre
+          id="modalContent"
+          class="text-sm text-gray-300 whitespace-pre-wrap overflow-y-auto flex-1"
+        ></pre>
+      </div>
     </div>
-  </div>
 
-  <!-- All JavaScript preserved exactly from original -->
-  <script>
-    const body = document.getElementById("body");
-    const toggleBtn = document.getElementById("toggleTheme");
-    const toggleEye = document.getElementById("togglePassword");
-    const passwordInput = document.getElementById("password");
-    const capsWarn = document.getElementById("capsWarn");
-    const loginBtn = document.getElementById("loginBtn");
-    const loginSpinner = document.getElementById("loginSpinner");
-    const loginBtnText = document.getElementById("loginBtnText");
+    <!-- All JavaScript preserved exactly from original -->
+    <script>
+      const body = document.getElementById("body");
+      const toggleBtn = document.getElementById("toggleTheme");
+      const toggleEye = document.getElementById("togglePassword");
+      const passwordInput = document.getElementById("password");
+      const capsWarn = document.getElementById("capsWarn");
+      const loginBtn = document.getElementById("loginBtn");
+      const loginSpinner = document.getElementById("loginSpinner");
+      const loginBtnText = document.getElementById("loginBtnText");
 
-    function togglePasswordVis() {
-      if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-        document.getElementById("eyeIcon").setAttribute("data-feather", "eye-off");
-      } else {
-        passwordInput.type = "password";
-        document.getElementById("eyeIcon").setAttribute("data-feather", "eye");
-      }
-      feather.replace();
-    }
-
-    toggleEye.onclick = togglePasswordVis;
-    toggleEye.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        togglePasswordVis();
-      }
-    });
-
-    function handleCaps(e) {
-      try {
-        const on = e.getModifierState && e.getModifierState("CapsLock");
-        capsWarn.classList.toggle("hidden", !on);
-      } catch {}
-    }
-    passwordInput.addEventListener("keydown", handleCaps);
-    passwordInput.addEventListener("keyup", handleCaps);
-
-    window.onload = () => {
-      const saved = localStorage.getItem("savedUsername");
-      if (saved) {
-        document.getElementById("username").value = saved;
-        document.getElementById("rememberMe").checked = true;
-      }
-    };
-
-    window.addEventListener("DOMContentLoaded", () => {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "dark" || !savedTheme) {
-        body.classList.add("dark");
-        document.getElementById("themeText").textContent = "Dark";
-        document.getElementById("themeIcon").setAttribute("data-feather", "moon");
-      } else {
-        body.classList.remove("dark");
-        document.getElementById("themeText").textContent = "Light";
-        document.getElementById("themeIcon").setAttribute("data-feather", "sun");
-      }
-      feather.replace();
-      if(window.applyLanguage) window.applyLanguage(localStorage.getItem('language') || 'en');
-    });
-
-    toggleBtn.onclick = () => {
-      body.classList.toggle("dark");
-      const isDark = body.classList.contains("dark");
-      document.getElementById("themeText").textContent = isDark ? "Dark" : "Light";
-      document.getElementById("themeIcon").setAttribute("data-feather", isDark ? "moon" : "sun");
-      localStorage.setItem("theme", isDark ? "dark" : "light");
-      feather.replace();
-    };
-
-    let pending2FAUsername = null;
-
-    async function login() {
-      const identifier = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const remember = document.getElementById("rememberMe").checked;
-      const errorMsg = document.getElementById("error-msg");
-      const baseUrl = window.location.origin;
-
-      if (!navigator.onLine) {
-        errorMsg.textContent = "You're offline. Login requires a connection.";
-        errorMsg.classList.remove("hidden");
-        return;
+      function togglePasswordVis() {
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          document
+            .getElementById("eyeIcon")
+            .setAttribute("data-feather", "eye-off");
+        } else {
+          passwordInput.type = "password";
+          document
+            .getElementById("eyeIcon")
+            .setAttribute("data-feather", "eye");
+        }
+        feather.replace();
       }
 
-      loginBtn.disabled = true;
-      loginSpinner.classList.remove("hidden");
-      loginBtnText.textContent = "Signing in…";
-
-      const response = await fetch(`${baseUrl}/api/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier, password }),
+      toggleEye.onclick = togglePasswordVis;
+      toggleEye.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          togglePasswordVis();
+        }
       });
 
-      const result = await response.json();
-      if (result.success) {
-        localStorage.setItem("username", result.username || identifier);
-        localStorage.setItem("usertag", result.usertag);
-        localStorage.setItem("session_token", result.session_token);
-        remember ? localStorage.setItem("savedUsername", identifier) : localStorage.removeItem("savedUsername");
-        try { new Audio("/files/audio/login.mp3").play().catch(() => {}); } catch {}
-        goToPage("loading.html");
-      } else if (result.requires_2fa) {
-        pending2FAUsername = result.username;
-        document.getElementById("login-inputs").classList.add("hidden");
-        document.getElementById("rememberMe").parentElement.classList.add("hidden");
-        document.getElementById("loginBtn").classList.add("hidden");
-        document.getElementById("twofa-section").classList.remove("hidden");
-        document.getElementById("twofa-code").focus();
-        errorMsg.classList.add("hidden");
-        loginBtn.disabled = false;
-        loginSpinner.classList.add("hidden");
-        loginBtnText.textContent = "Sign In";
-        feather.replace();
-      } else {
-        errorMsg.textContent = result.error || "Login failed.";
-        errorMsg.classList.remove("hidden");
-        try { new Audio("/files/audio/error.mp3").play().catch(() => {}); } catch {}
-        loginBtn.disabled = false;
-        loginSpinner.classList.add("hidden");
-        loginBtnText.textContent = "Sign In";
+      function handleCaps(e) {
+        try {
+          const on = e.getModifierState && e.getModifierState("CapsLock");
+          capsWarn.classList.toggle("hidden", !on);
+        } catch {}
       }
-    }
+      passwordInput.addEventListener("keydown", handleCaps);
+      passwordInput.addEventListener("keyup", handleCaps);
 
-    async function verify2FA() {
-      const code = document.getElementById("twofa-code").value.trim();
-      const errorMsg = document.getElementById("error-msg");
-      const verifyBtn = document.getElementById("verify2faBtn");
-      const verifySpinner = document.getElementById("verify2faSpinner");
-      const verifyBtnText = document.getElementById("verify2faBtnText");
-
-      if (!code || code.length !== 6) {
-        errorMsg.textContent = "Please enter a 6-digit code.";
-        errorMsg.classList.remove("hidden");
-        return;
-      }
-
-      verifyBtn.disabled = true;
-      verifySpinner.classList.remove("hidden");
-      verifyBtnText.textContent = "Verifying…";
-
-      try {
-        const res = await fetch("/api/auth/2fa/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: pending2FAUsername, code }),
-        });
-        const data = await res.json();
-
-        if (data.success) {
-          localStorage.setItem("username", data.username);
-          localStorage.setItem("usertag", data.usertag);
-          localStorage.setItem("session_token", data.session_token);
-          try { new Audio("/files/audio/login.mp3").play().catch(() => {}); } catch {}
-          goToPage("loading.html");
-        } else {
-          errorMsg.textContent = data.error || "Invalid code.";
-          errorMsg.classList.remove("hidden");
-          try { new Audio("/files/audio/error.mp3").play().catch(() => {}); } catch {}
+      window.onload = () => {
+        const saved = localStorage.getItem("savedUsername");
+        if (saved) {
+          document.getElementById("username").value = saved;
+          document.getElementById("rememberMe").checked = true;
         }
-      } catch (e) {
-        errorMsg.textContent = "Network error.";
-        errorMsg.classList.remove("hidden");
-      }
+      };
 
-      verifyBtn.disabled = false;
-      verifySpinner.classList.add("hidden");
-      verifyBtnText.textContent = "Verify";
-    }
+      window.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark" || !savedTheme) {
+          body.classList.add("dark");
+          document.getElementById("themeText").textContent = "Dark";
+          document
+            .getElementById("themeIcon")
+            .setAttribute("data-feather", "moon");
+        } else {
+          body.classList.remove("dark");
+          document.getElementById("themeText").textContent = "Light";
+          document
+            .getElementById("themeIcon")
+            .setAttribute("data-feather", "sun");
+        }
+        feather.replace();
+        if (window.applyLanguage)
+          window.applyLanguage(localStorage.getItem("language") || "en");
+      });
 
-    function reset2FAFlow() {
-      pending2FAUsername = null;
-      document.getElementById("twofa-section").classList.add("hidden");
-      document.getElementById("login-inputs").classList.remove("hidden");
-      document.getElementById("rememberMe").parentElement.classList.remove("hidden");
-      document.getElementById("loginBtn").classList.remove("hidden");
-      document.getElementById("twofa-code").value = "";
-      document.getElementById("error-msg").classList.add("hidden");
-    }
+      toggleBtn.onclick = () => {
+        body.classList.toggle("dark");
+        const isDark = body.classList.contains("dark");
+        document.getElementById("themeText").textContent = isDark
+          ? "Dark"
+          : "Light";
+        document
+          .getElementById("themeIcon")
+          .setAttribute("data-feather", isDark ? "moon" : "sun");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+        feather.replace();
+      };
 
-    async function socialLogin(provider) {
-      const errorMsg = document.getElementById("error-msg");
-      errorMsg.classList.add("hidden");
-      try { new Audio("/files/audio/click.mp3").play().catch(() => {}); } catch {}
-      document.body.classList.add("cursor-wait");
+      let pending2FAUsername = null;
 
-      try {
-        const res = await fetch("/api/auth/social", {
+      async function login() {
+        const identifier = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const remember = document.getElementById("rememberMe").checked;
+        const errorMsg = document.getElementById("error-msg");
+        const baseUrl = window.location.origin;
+
+        if (!navigator.onLine) {
+          errorMsg.textContent = "You're offline. Login requires a connection.";
+          errorMsg.classList.remove("hidden");
+          return;
+        }
+
+        loginBtn.disabled = true;
+        loginSpinner.classList.remove("hidden");
+        loginBtnText.textContent = "Signing in…";
+
+        const response = await fetch(`${baseUrl}/api/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ provider }),
+          body: JSON.stringify({ identifier, password }),
         });
-        const data = await res.json();
 
-        if (data.success) {
-          localStorage.setItem("username", data.username);
-          localStorage.setItem("usertag", data.usertag);
-          localStorage.setItem("session_token", data.session_token);
-          try { new Audio("/files/audio/login.mp3").play().catch(() => {}); } catch {}
+        const result = await response.json();
+        if (result.success) {
+          localStorage.setItem("username", result.username || identifier);
+          localStorage.setItem("usertag", result.usertag);
+          localStorage.setItem("session_token", result.session_token);
+          remember
+            ? localStorage.setItem("savedUsername", identifier)
+            : localStorage.removeItem("savedUsername");
+          try {
+            new Audio("/files/audio/login.mp3").play().catch(() => {});
+          } catch {}
           goToPage("loading.html");
+        } else if (result.requires_2fa) {
+          pending2FAUsername = result.username;
+          document.getElementById("login-inputs").classList.add("hidden");
+          document
+            .getElementById("rememberMe")
+            .parentElement.classList.add("hidden");
+          document.getElementById("loginBtn").classList.add("hidden");
+          document.getElementById("twofa-section").classList.remove("hidden");
+          document.getElementById("twofa-code").focus();
+          errorMsg.classList.add("hidden");
+          loginBtn.disabled = false;
+          loginSpinner.classList.add("hidden");
+          loginBtnText.textContent = "Sign In";
+          feather.replace();
         } else {
-          errorMsg.textContent = data.error || "Login failed.";
+          errorMsg.textContent = result.error || "Login failed.";
+          errorMsg.classList.remove("hidden");
+          try {
+            new Audio("/files/audio/error.mp3").play().catch(() => {});
+          } catch {}
+          loginBtn.disabled = false;
+          loginSpinner.classList.add("hidden");
+          loginBtnText.textContent = "Sign In";
+        }
+      }
+
+      async function verify2FA() {
+        const code = document.getElementById("twofa-code").value.trim();
+        const errorMsg = document.getElementById("error-msg");
+        const verifyBtn = document.getElementById("verify2faBtn");
+        const verifySpinner = document.getElementById("verify2faSpinner");
+        const verifyBtnText = document.getElementById("verify2faBtnText");
+
+        if (!code || code.length !== 6) {
+          errorMsg.textContent = "Please enter a 6-digit code.";
+          errorMsg.classList.remove("hidden");
+          return;
+        }
+
+        verifyBtn.disabled = true;
+        verifySpinner.classList.remove("hidden");
+        verifyBtnText.textContent = "Verifying…";
+
+        try {
+          const res = await fetch("/api/auth/2fa/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: pending2FAUsername, code }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("usertag", data.usertag);
+            localStorage.setItem("session_token", data.session_token);
+            try {
+              new Audio("/files/audio/login.mp3").play().catch(() => {});
+            } catch {}
+            goToPage("loading.html");
+          } else {
+            errorMsg.textContent = data.error || "Invalid code.";
+            errorMsg.classList.remove("hidden");
+            try {
+              new Audio("/files/audio/error.mp3").play().catch(() => {});
+            } catch {}
+          }
+        } catch (e) {
+          errorMsg.textContent = "Network error.";
+          errorMsg.classList.remove("hidden");
+        }
+
+        verifyBtn.disabled = false;
+        verifySpinner.classList.add("hidden");
+        verifyBtnText.textContent = "Verify";
+      }
+
+      function reset2FAFlow() {
+        pending2FAUsername = null;
+        document.getElementById("twofa-section").classList.add("hidden");
+        document.getElementById("login-inputs").classList.remove("hidden");
+        document
+          .getElementById("rememberMe")
+          .parentElement.classList.remove("hidden");
+        document.getElementById("loginBtn").classList.remove("hidden");
+        document.getElementById("twofa-code").value = "";
+        document.getElementById("error-msg").classList.add("hidden");
+      }
+
+      async function socialLogin(provider) {
+        const errorMsg = document.getElementById("error-msg");
+        errorMsg.classList.add("hidden");
+        try {
+          new Audio("/files/audio/click.mp3").play().catch(() => {});
+        } catch {}
+        document.body.classList.add("cursor-wait");
+
+        try {
+          const res = await fetch("/api/auth/social", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ provider }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("usertag", data.usertag);
+            localStorage.setItem("session_token", data.session_token);
+            try {
+              new Audio("/files/audio/login.mp3").play().catch(() => {});
+            } catch {}
+            goToPage("loading.html");
+          } else {
+            errorMsg.textContent = data.error || "Login failed.";
+            errorMsg.classList.remove("hidden");
+            document.body.classList.remove("cursor-wait");
+          }
+        } catch (e) {
+          errorMsg.textContent = "Network error. Try again.";
           errorMsg.classList.remove("hidden");
           document.body.classList.remove("cursor-wait");
         }
-      } catch (e) {
-        errorMsg.textContent = "Network error. Try again.";
-        errorMsg.classList.remove("hidden");
-        document.body.classList.remove("cursor-wait");
-      }
-    }
-
-    function goToPage(href) {
-      document.body.style.opacity = '0';
-      document.body.style.transition = 'opacity 0.4s ease';
-      setTimeout(() => { window.location.href = href; }, 400);
-    }
-
-    document.querySelectorAll("a").forEach((link) => {
-      if (link.hostname === window.location.hostname) {
-        link.addEventListener("click", function (e) {
-          e.preventDefault();
-          goToPage(this.getAttribute("href"));
-        });
-      }
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") login();
-    });
-
-    async function bioLogin() {
-      const errorMsg = document.getElementById("error-msg");
-      errorMsg.classList.add("hidden");
-
-      if (!window.PublicKeyCredential) {
-        errorMsg.textContent = "Passkeys not supported.";
-        errorMsg.classList.remove("hidden");
-        return;
       }
 
-      const bioBtn = document.getElementById("bioLoginBtn");
-      const bioText = document.getElementById("bioLoginBtnText");
-      const originalText = bioText.getAttribute("data-i18n")
-        ? (translations[localStorage.getItem("language") || "en"] || {})[bioText.getAttribute("data-i18n")] || "Sign in with Passkey"
-        : "Sign in with Passkey";
+      function goToPage(href) {
+        document.body.style.opacity = "0";
+        document.body.style.transition = "opacity 0.4s ease";
+        setTimeout(() => {
+          window.location.href = href;
+        }, 400);
+      }
 
-      bioBtn.disabled = true;
-      bioText.textContent = "Authenticating...";
-
-      try {
-        const challengeRes = await fetch("/api/auth/webauthn/challenge", { method: "POST" });
-        const challengeData = await challengeRes.json();
-
-        if (!challengeData.success) throw new Error("Server init failed");
-
-        const challengeBuffer = Uint8Array.from(atob(challengeData.challenge), (c) => c.charCodeAt(0));
-
-        const publicKeyCredentialRequestOptions = {
-          challenge: challengeBuffer,
-          rp: { name: "Zylo" },
-          userVerification: "discouraged",
-          timeout: 60000,
-        };
-
-        const credential = await navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions });
-
-        if (!credential) throw new Error("No credential.");
-
-        const verifyRes = await fetch("/api/auth/webauthn/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ credentialId: credential.id, mock_success: true }),
-        });
-
-        const verifyResult = await verifyRes.json();
-
-        if (verifyResult.success) {
-          localStorage.setItem("username", verifyResult.username);
-          localStorage.setItem("usertag", verifyResult.usertag);
-          localStorage.setItem("session_token", verifyResult.session_token);
-          try { new Audio("/files/audio/login.mp3").play().catch(() => {}); } catch {}
-          goToPage("loading.html");
-        } else {
-          throw new Error(verifyResult.error || "Verification failed");
+      document.querySelectorAll("a").forEach((link) => {
+        if (link.hostname === window.location.hostname) {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            goToPage(this.getAttribute("href"));
+          });
         }
-      } catch (err) {
-        console.error(err);
-        errorMsg.textContent = "Authentication failed. (No Passkey registered?)";
-        errorMsg.classList.remove("hidden");
-        try { new Audio("/files/audio/error.mp3").play().catch(() => {}); } catch {}
-      } finally {
-        bioBtn.disabled = false;
-        bioText.textContent = originalText;
-      }
-    }
+      });
 
-    window.addEventListener("load", () => {
-      if (window.PublicKeyCredential) {
-        PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then((available) => {
-          if (available || window.location.hostname === "localhost") {
-            document.getElementById("bioLoginBtn").classList.remove("hidden");
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") login();
+      });
+
+      async function bioLogin() {
+        const errorMsg = document.getElementById("error-msg");
+        errorMsg.classList.add("hidden");
+
+        if (!window.PublicKeyCredential) {
+          errorMsg.textContent = "Passkeys not supported.";
+          errorMsg.classList.remove("hidden");
+          return;
+        }
+
+        const bioBtn = document.getElementById("bioLoginBtn");
+        const bioText = document.getElementById("bioLoginBtnText");
+        const originalText = bioText.getAttribute("data-i18n")
+          ? (translations[localStorage.getItem("language") || "en"] || {})[
+              bioText.getAttribute("data-i18n")
+            ] || "Sign in with Passkey"
+          : "Sign in with Passkey";
+
+        bioBtn.disabled = true;
+        bioText.textContent = "Authenticating...";
+
+        try {
+          const challengeRes = await fetch("/api/auth/webauthn/challenge", {
+            method: "POST",
+          });
+          const challengeData = await challengeRes.json();
+
+          if (!challengeData.success) throw new Error("Server init failed");
+
+          const challengeBuffer = Uint8Array.from(
+            atob(challengeData.challenge),
+            (c) => c.charCodeAt(0),
+          );
+
+          const publicKeyCredentialRequestOptions = {
+            challenge: challengeBuffer,
+            rp: { name: "Zylo" },
+            userVerification: "discouraged",
+            timeout: 60000,
+          };
+
+          const credential = await navigator.credentials.get({
+            publicKey: publicKeyCredentialRequestOptions,
+          });
+
+          if (!credential) throw new Error("No credential.");
+
+          const verifyRes = await fetch("/api/auth/webauthn/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              credentialId: credential.id,
+              mock_success: true,
+            }),
+          });
+
+          const verifyResult = await verifyRes.json();
+
+          if (verifyResult.success) {
+            localStorage.setItem("username", verifyResult.username);
+            localStorage.setItem("usertag", verifyResult.usertag);
+            localStorage.setItem("session_token", verifyResult.session_token);
+            try {
+              new Audio("/files/audio/login.mp3").play().catch(() => {});
+            } catch {}
+            goToPage("loading.html");
+          } else {
+            throw new Error(verifyResult.error || "Verification failed");
           }
-        });
+        } catch (err) {
+          console.error(err);
+          errorMsg.textContent =
+            "Authentication failed. (No Passkey registered?)";
+          errorMsg.classList.remove("hidden");
+          try {
+            new Audio("/files/audio/error.mp3").play().catch(() => {});
+          } catch {}
+        } finally {
+          bioBtn.disabled = false;
+          bioText.textContent = originalText;
+        }
       }
-    });
 
-    const zyloPP = `Last Updated: 4:10 PM 7/31/2025
+      window.addEventListener("load", () => {
+        if (window.PublicKeyCredential) {
+          PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(
+            (available) => {
+              if (available || window.location.hostname === "localhost") {
+                document
+                  .getElementById("bioLoginBtn")
+                  .classList.remove("hidden");
+              }
+            },
+          );
+        }
+      });
+
+      const zyloPP = `Last Updated: 4:10 PM 7/31/2025
 
 This Privacy Policy explains how Zylo ("we", "us", or "our") collects, uses, and protects your information. By using Zylo, you agree to the collection and use of information in accordance with this policy.
 
@@ -672,7 +829,7 @@ We may update this Privacy Policy from time to time.
 9. Contact Us
 If you have questions, contact us at zylosupp0rt@gmail.com.`;
 
-    const zyloTOS = `Last Updated: 4:07 PM 7/31/2025
+      const zyloTOS = `Last Updated: 4:07 PM 7/31/2025
 
 Welcome to Zylo! These Terms of Service ("Terms") govern your access to and use of our services.
 
@@ -709,42 +866,45 @@ We reserve the right to modify these Terms at any time.
 9. Contact Us
 If you have any questions, contact us at zylosupp0rt@gmail.com.`;
 
-    function openModal(type) {
-      const title = type === "pp" ? "Privacy Policy" : "Terms of Service";
-      const content = type === "pp" ? zyloPP : zyloTOS;
-      document.getElementById("modalTitle").textContent = title;
-      document.getElementById("modalContent").textContent = content;
-      document.getElementById("modal").classList.remove("hidden");
-      document.body.classList.add("overflow-hidden");
-    }
-
-    function closeModal() {
-      document.getElementById("modal").classList.add("hidden");
-      document.body.classList.remove("overflow-hidden");
-    }
-
-    document.getElementById("username").addEventListener("blur", async () => {
-      const identifier = document.getElementById("username").value.trim();
-      const baseUrl = window.location.origin;
-      if (!identifier) return;
-      if (!navigator.onLine) return;
-
-      try {
-        const res = await fetch(`${baseUrl}/api/get-user?identifier=${encodeURIComponent(identifier)}`);
-        const data = await res.json();
-        const avatarImg = document.getElementById("loginAvatar");
-        if (data.success && data.user.avatar) {
-          avatarImg.src = data.user.avatar;
-        } else {
-          avatarImg.src = "/images/default_avatar.png";
-        }
-      } catch (err) {
-        console.error("Failed to load avatar", err);
-        document.getElementById("loginAvatar").src = "/images/default_avatar.png";
+      function openModal(type) {
+        const title = type === "pp" ? "Privacy Policy" : "Terms of Service";
+        const content = type === "pp" ? zyloPP : zyloTOS;
+        document.getElementById("modalTitle").textContent = title;
+        document.getElementById("modalContent").textContent = content;
+        document.getElementById("modal").classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
       }
-    });
-  </script>
-  <script src="js/icon-switcher.js"></script>
-  <script src="/files/sw-register.js"></script>
-</body>
+
+      function closeModal() {
+        document.getElementById("modal").classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+      }
+
+      document.getElementById("username").addEventListener("blur", async () => {
+        const identifier = document.getElementById("username").value.trim();
+        const baseUrl = window.location.origin;
+        if (!identifier) return;
+        if (!navigator.onLine) return;
+
+        try {
+          const res = await fetch(
+            `${baseUrl}/api/get-user?identifier=${encodeURIComponent(identifier)}`,
+          );
+          const data = await res.json();
+          const avatarImg = document.getElementById("loginAvatar");
+          if (data.success && data.user.avatar) {
+            avatarImg.src = data.user.avatar;
+          } else {
+            avatarImg.src = "/images/default_avatar.png";
+          }
+        } catch (err) {
+          console.error("Failed to load avatar", err);
+          document.getElementById("loginAvatar").src =
+            "/images/default_avatar.png";
+        }
+      });
+    </script>
+    <script src="js/icon-switcher.js"></script>
+    <script src="/files/sw-register.js"></script>
+  </body>
 </html>

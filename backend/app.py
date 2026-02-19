@@ -1059,9 +1059,12 @@ def handle_send_message(data):
     attachments = data.get("attachments", []) # List of {url, type, name}
 
     msg_data = {
+        "id": data.get("id") or str(__import__('uuid').uuid4()),
         "username": username, 
         "message": message,
         "attachments": attachments,
+        "reactions": {},
+        "replyTo": data.get("replyTo"),
         "timestamp": int(_time.time())
     }
     messages.append(msg_data)
@@ -3466,6 +3469,7 @@ def get_pinned_messages(group_id, channel_id):
 
 @socketio.on('message_reaction')
 def handle_message_reaction(data):
+    global messages, dms
     # Unified handler for DMs and Groups
     group_id = (data or {}).get('groupId')
     msg_id = (data or {}).get('messageId')
@@ -3478,13 +3482,12 @@ def handle_message_reaction(data):
         
     if group_id:
         # handle group reaction logic (reusing or duplicating logic for speed)
-        # We can call the logic logic from react_group_message_api but tailored for socket
         all_groups = load_groups()
         for idx, g in enumerate(all_groups):
             if g.get('id') == group_id:
-                messages = g.get('messages', [])
+                group_msgs = g.get('messages', [])
                 # Find message by ID
-                target_msg = next((m for m in messages if m.get('id') == msg_id), None)
+                target_msg = next((m for m in group_msgs if m.get('id') == msg_id), None)
                 if target_msg:
                     if 'reactions' not in target_msg: target_msg['reactions'] = {}
                     reactions = target_msg['reactions']
@@ -3497,21 +3500,41 @@ def handle_message_reaction(data):
                         if username in reactions[emoji]: reactions[emoji].remove(username)
                         if not reactions[emoji]: del reactions[emoji]
                     
-                    # Update Reference
-                    # messages list content updated in place
-                    all_groups[idx]['messages'] = messages
+                    all_groups[idx]['messages'] = group_msgs
                     save_groups(all_groups)
                     
-                    # Emit
-                    emit('message_reaction_update', {
+                    # Emit (use socketio.emit to include the sender)
+                    socketio.emit('message_reaction_update', {
                         'groupId': group_id,
                         'messageId': msg_id,
                         'reactions': reactions
                     }, room=group_id)
                 return
     else:
+        # Try Community messages first
+        target_msg = next((m for m in messages if m.get('id') == msg_id), None)
+        if target_msg:
+            if 'reactions' not in target_msg: target_msg['reactions'] = {}
+            reactions = target_msg['reactions']
+
+            if emoji not in reactions: reactions[emoji] = []
+
+            if action == 'add':
+                if username not in reactions[emoji]: reactions[emoji].append(username)
+            else:
+                if username in reactions[emoji]: reactions[emoji].remove(username)
+                if not reactions[emoji]: del reactions[emoji]
+
+            save_messages(messages)
+
+            # Broadcast to all connected clients
+            socketio.emit('message_reaction_update', {
+                'messageId': msg_id,
+                'reactions': reactions
+            })
+            return
+
         # DM Reaction
-        global dms
         target_msg = next((m for m in dms if m.get('id') == msg_id), None)
         if target_msg:
             if 'reactions' not in target_msg: target_msg['reactions'] = {}
@@ -3528,7 +3551,6 @@ def handle_message_reaction(data):
             save_dms(dms)
             
             # Emit to both sender and recipient
-            # target_msg['from'] and target_msg['to']
             sender = target_msg.get('from')
             recipient = target_msg.get('to')
             
@@ -3538,8 +3560,8 @@ def handle_message_reaction(data):
                 'peer': username # Who reacted
             }
             
-            if sender: socketio.emit('message_reaction_update', payload, room=f"dm:{sender}")
-            if recipient: socketio.emit('message_reaction_update', payload, room=f"dm:{recipient}")
+            if sender: socketio.emit('message_reaction_update', payload, room=f"user_{sender}")
+            if recipient: socketio.emit('message_reaction_update', payload, room=f"user_{recipient}")
 
 # ==========================================
 # MOMENTS IMPLEMENTATION

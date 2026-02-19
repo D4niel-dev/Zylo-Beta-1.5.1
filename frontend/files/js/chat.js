@@ -267,6 +267,7 @@ async function createDiscordMessage(data) {
     messageRow.appendChild(avatar);
 
     const contentWrapper = document.createElement("div");
+    contentWrapper.className = "msg-content-wrapper relative min-w-0 flex-1";
 
     const header = document.createElement("div");
     header.className = "flex items-baseline gap-2";
@@ -771,13 +772,6 @@ window.cancelReply = cancelReply;
 async function addReactionToMessage(msgWrapper, emoji, data) {
     const username = localStorage.getItem('savedUsername') || 'User';
 
-    let reactionsContainer = msgWrapper.querySelector('.reactions-container');
-    if (!reactionsContainer) {
-        reactionsContainer = document.createElement("div");
-        reactionsContainer.className = "reactions-container flex flex-wrap gap-1 mt-1 ml-12";
-        msgWrapper.appendChild(reactionsContainer);
-    }
-
     if (!data.reactions) data.reactions = {};
     if (!data.reactions[emoji]) data.reactions[emoji] = [];
 
@@ -791,18 +785,8 @@ async function addReactionToMessage(msgWrapper, emoji, data) {
         }
     }
 
-    // Re-render
-    reactionsContainer.innerHTML = '';
-    for (const [reactionEmoji, users] of Object.entries(data.reactions)) {
-        if (users.length === 0) continue;
-        const hasUserReacted = users.includes(username);
-        const reactionBadge = document.createElement("button");
-        reactionBadge.className = `flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs border transition ${hasUserReacted ? 'bg-discord-blurple/30 border-discord-blurple' : 'bg-discord-gray-700/50 hover:bg-discord-gray-600 border-discord-gray-600'}`;
-        reactionBadge.innerHTML = `<span>${reactionEmoji}</span><span class="text-discord-gray-300">${users.length}</span>`;
-        reactionBadge.title = users.join(', ');
-        reactionBadge.onclick = () => addReactionToMessage(msgWrapper, reactionEmoji, data);
-        reactionsContainer.appendChild(reactionBadge);
-    }
+    // Use unified render helper
+    renderReactions(msgWrapper, data.reactions);
 
     // Sync to backend
     try {
@@ -830,6 +814,67 @@ async function addReactionToMessage(msgWrapper, emoji, data) {
         }
     } catch (e) { console.error('Reaction sync failed:', e); }
 }
+
+// Global Toggle Reaction (for clicking existing badges)
+window.toggleReaction = async function(msgId, emoji, groupId) {
+    const username = localStorage.getItem('savedUsername') || 'User';
+    const msgEl = document.querySelector(`[data-msg-id="${msgId}"]`);
+    if (!msgEl) return;
+
+    // Determine action from current DOM state BEFORE optimistic update
+    const container = msgEl.querySelector('.reactions-container');
+    let wasReacted = false;
+    if (container) {
+        const badge = container.querySelector(`[data-emoji="${emoji}"]`);
+        if (badge) wasReacted = badge.classList.contains('reacted-by-me');
+    }
+    const action = wasReacted ? 'remove' : 'add';
+
+    // Optimistic UI Update
+    if (container) {
+        const badge = container.querySelector(`[data-emoji="${emoji}"]`);
+        if (badge) {
+            const countSpan = badge.querySelector('.font-bold');
+            let count = parseInt(countSpan.textContent);
+            
+            if (wasReacted) {
+                badge.classList.remove('bg-discord-blurple/20', 'border-discord-blurple', 'text-blue-200', 'reacted-by-me');
+                badge.classList.add('bg-discord-gray-800', 'border-transparent', 'text-gray-400');
+                count--;
+            } else {
+                badge.classList.add('bg-discord-blurple/20', 'border-discord-blurple', 'text-blue-200', 'reacted-by-me');
+                badge.classList.remove('bg-discord-gray-800', 'border-transparent', 'text-gray-400');
+                count++;
+            }
+            
+            if (count > 0) {
+                countSpan.textContent = count;
+            } else {
+                badge.remove();
+            }
+        }
+    }
+
+    // Determine groupId from DOM context
+    let gid = groupId || null;
+    if (!gid) {
+        const inGroup = msgEl.closest('#groupChatMessages');
+        gid = inGroup ? currentGroupId : null;
+    }
+
+    // Sync to backend
+    try {
+        if (typeof window.socket !== 'undefined') {
+            window.socket.emit('message_reaction', {
+                groupId: gid,
+                messageId: msgId,
+                username,
+                emoji,
+                action
+            });
+        }
+    } catch (e) { console.error(e); }
+};
 
 // Rate Limiting
 const rateLimit = {
@@ -1806,18 +1851,21 @@ function toggleReaction(msgId, emoji, groupId) {
     if (!msgId || !emoji) return;
     const me = localStorage.getItem('username') || localStorage.getItem('savedUsername');
     
-    // Determine context (Group/DM)
-    // If groupId is passed, use it. Else fall back to global currentGroupId if set.
-    const gid = groupId || currentGroupId; 
-    
-    // Determine action: Check if we already reacted
-    // We need the current state.
-    // Optimistic toggle: We don't know state easily without querying DOM or store.
-    // Basic implementation: Always 'add' unless we can verify?
-    // Backend handles toggle logic? No, backend expects 'add' or 'remove'.
-    // Let's check the DOM first.
-    
+    // Determine context: check if the message lives inside the community chat container
     const msgEl = document.querySelector(`[data-msg-id="${msgId}"]`);
+    let gid = groupId || null;
+    if (!gid && msgEl) {
+        // If inside community chat, groupId must be null
+        const inCommunity = msgEl.closest('#chatMessagesCommunity');
+        const inGroup = msgEl.closest('#groupChatMessages');
+        if (inGroup && currentGroupId) {
+            gid = currentGroupId;
+        } else {
+            gid = null; // Community or DM
+        }
+    }
+    
+    // Determine action: Check if we already reacted via DOM
     let action = 'add';
     if (msgEl) {
         const reactionsContainer = msgEl.querySelector('.reactions-container');
@@ -1830,7 +1878,7 @@ function toggleReaction(msgId, emoji, groupId) {
     }
     
     window.socket.emit('message_reaction', {
-        groupId: gid, // null for DM
+        groupId: gid,
         messageId: msgId,
         username: me,
         emoji: emoji,
@@ -1839,7 +1887,28 @@ function toggleReaction(msgId, emoji, groupId) {
 }
 
 function addReactionToMessage(msgWrapper, emoji, data) {
-    toggleReaction(data.id, emoji, data.groupId || currentGroupId);
+    const me = localStorage.getItem('username') || localStorage.getItem('savedUsername');
+    
+    // Optimistic UI: update local data and re-render immediately
+    if (!data.reactions) data.reactions = {};
+    if (!data.reactions[emoji]) data.reactions[emoji] = [];
+    
+    const idx = data.reactions[emoji].indexOf(me);
+    if (idx === -1) {
+        data.reactions[emoji].push(me);
+    } else {
+        data.reactions[emoji].splice(idx, 1);
+        if (data.reactions[emoji].length === 0) delete data.reactions[emoji];
+    }
+    renderReactions(msgWrapper, data.reactions);
+
+    // Determine groupId from DOM context, not global state
+    let gid = data.groupId || null;
+    if (!gid && msgWrapper) {
+        const inGroup = msgWrapper.closest('#groupChatMessages');
+        gid = inGroup ? currentGroupId : null;
+    }
+    toggleReaction(data.id, emoji, gid);
 }
 
 function renderReactions(msgWrapper, reactions) {
@@ -1847,13 +1916,13 @@ function renderReactions(msgWrapper, reactions) {
     let container = msgWrapper.querySelector('.reactions-container');
     if (!container) {
         container = document.createElement("div");
-        container.className = "reactions-container flex flex-wrap gap-1 mt-1 empty:hidden";
+        container.className = "reactions-container flex flex-wrap gap-1 mt-1 pl-1";
         // Insert after message body (contentWrapper)
-        // Need to find contentWrapper. Best effort:
-        const body = msgWrapper.querySelector('.msg-body-wrapper') || msgWrapper.querySelector('.flex.items-baseline').parentNode; // fallback
+        const body = msgWrapper.querySelector('.msg-content-wrapper');
         if (body) {
              body.appendChild(container);
         } else {
+             // Fallback
              msgWrapper.appendChild(container);     
         }
     }
@@ -1877,7 +1946,11 @@ function renderReactions(msgWrapper, reactions) {
         pill.innerHTML = `<span>${emoji}</span><span class="font-bold">${count}</span>`;
         pill.onclick = (e) => {
             e.stopPropagation();
-            toggleReaction(msgWrapper.getAttribute('data-msg-id'), emoji, currentGroupId); 
+            // Determine groupId from DOM context
+            let gid = null;
+            const inGroup = msgWrapper.closest('#groupChatMessages');
+            if (inGroup && currentGroupId) gid = currentGroupId;
+            toggleReaction(msgWrapper.getAttribute('data-msg-id'), emoji, gid); 
         };
         
         // Tooltip for users

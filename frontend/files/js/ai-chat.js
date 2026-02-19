@@ -650,8 +650,34 @@ class AIChatManager {
             </div>
         `;
         container.appendChild(div);
+        
+        // Inject Actions for AI messages (excluding error messages)
+        if (!isUser && !content.startsWith('Error:')) {
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'ai-msg-actions';
+            actionsDiv.innerHTML = `
+                <button class="ai-action-btn copy" onclick="window.aiManager.copyToClipboard(this)" title="Copy">
+                    <i data-feather="copy"></i> Copy
+                </button>
+                <button class="ai-action-btn reload" onclick="window.aiManager.regenerateLastMessage()" title="Regenerate">
+                    <i data-feather="refresh-cw"></i> Reload
+                </button>
+                <div class="h-3 w-px bg-gray-700 mx-1"></div>
+                <button class="ai-action-btn like" onclick="window.aiManager.handleFeedback(this, 'like')" title="Good response">
+                    <i data-feather="thumbs-up"></i>
+                </button>
+                <button class="ai-action-btn dislike" onclick="window.aiManager.handleFeedback(this, 'dislike')" title="Bad response">
+                    <i data-feather="thumbs-down"></i>
+                </button>
+            `;
+            container.appendChild(actionsDiv);
+            if(window.feather) feather.replace();
+        }
+
         if(window.feather) feather.replace();
         
+
+
         return div; // Return the element for further manipulation
     }
 
@@ -945,6 +971,108 @@ class AIChatManager {
         } catch (e) {
             console.error("AI Status Check Failed", e);
         }
+    }
+
+    // === AI Actions Implementation ===
+    
+    copyToClipboard(btn) {
+        const actionsDiv = btn.closest('.ai-msg-actions');
+        const msgDiv = actionsDiv.previousElementSibling;
+        const prose = msgDiv.querySelector('.prose');
+        
+        if (prose) {
+            const text = prose.innerText; // Use innerText to preserve newlines
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = `<i data-feather="check"></i> Copied`;
+                if(window.feather) feather.replace();
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    if(window.feather) feather.replace();
+                }, 2000);
+            });
+        }
+    }
+
+    regenerateLastMessage() {
+        const session = this.activeSessions.get(this.activeSessionId);
+        if (!session || session.messages.length === 0) return;
+
+        const lastMsg = session.messages[session.messages.length - 1];
+        if (lastMsg.role === 'assistant') {
+            session.messages.pop();
+            this.saveSession(session);
+            
+            const container = this.sessions[session.model].container;
+            this.renderSessionContent(session, container);
+            
+            this.showTyping(container, session.model);
+            
+            const selectedSubModel = localStorage.getItem(`ai_model_${session.model}`) || 'gemma:2b';
+            
+            fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('session_token')}`
+                },
+                body: JSON.stringify({
+                    model: selectedSubModel,
+                    messages: session.messages,
+                    persona: session.model,
+                    mode: 'Thinking', 
+                    sessionId: session.id
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                this.hideTyping(container);
+                if (data.success) {
+                    const reply = data.reply || data.response?.content || 'Empty response';
+                    session.messages.push({ role: 'assistant', content: reply });
+                    this.saveSession(session);
+                    this.renderSessionContent(session, container);
+                } else {
+                    alert('Regeneration failed: ' + data.error);
+                }
+            })
+            .catch(e => {
+                this.hideTyping(container);
+                alert('Connection error during regeneration.');
+            });
+        }
+    }
+
+    handleFeedback(btn, type) {
+        this.showToast("Thank you for your feedback!");
+        
+        const originalColor = btn.style.color;
+        btn.style.color = type === 'like' ? '#22c55e' : '#ef4444';
+        
+        const group = btn.parentElement;
+        const feedbackBtns = group.querySelectorAll('.like, .dislike');
+        feedbackBtns.forEach(b => b.style.pointerEvents = 'none');
+    }
+
+    showToast(message) {
+        let toast = document.getElementById('aiToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'aiToast';
+            toast.className = 'ai-toast';
+            document.body.appendChild(toast);
+        }
+        
+        toast.innerHTML = `<i data-feather="check-circle"></i> <span>${message}</span>`;
+        if(window.feather) feather.replace();
+        
+        void toast.offsetWidth;
+        
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
     }
 }
 
