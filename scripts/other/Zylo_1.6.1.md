@@ -57,10 +57,10 @@ paid upgrades.
 
 ---
 
-## Phase 1 — Project Structure (Final)
+## Phase 1 — Project Structure *(Final)*
 
 ```
-Zylo/                            # Same app folder, like still in the current Beta folder
+Zylo/                           # Same app folder, like still in the current Beta folder
 ├─ backend/
 │  ├─ app.py                    # Main Flask + Socket.IO server
 │  ├─ database.py               # PostgreSQL ORM layer (rewritten)
@@ -87,7 +87,7 @@ Zylo/                            # Same app folder, like still in the current Be
 
 ---
 
-## Phase 2 — Backend Changes (Required)
+## Phase 2 — Backend Changes *(Required)*
 
 ### 2.1 Flask Static Serving
 
@@ -95,7 +95,8 @@ Backend serves all frontend assets directly.
 
 - `static_folder` → `../frontend`
 - `static_url_path` → `""`
-- Main route `/` → `mainapp.html`
+- Main route `/` → `mainapp.html` *(If no account data is loaded → `login.html`)*
+- When first enter route `/login.html` → `login.html`
 
 ### 2.2 Socket.IO Setup
 
@@ -117,10 +118,13 @@ if __name__ == "__main__":
 
 ## Phase 3 — AI Provider Strategy
 
-### 3.1 Hybrid AI Architecture (Zero-Cost Safe Mode)
+### 3.1 Hybrid AI Architecture *(Zero-Cost Safe Mode)*
 
 To avoid mandatory billing, Zylo uses a provider selection system. When a user
 enters AI Chat for the first time, they choose how their AI requests are routed.
+After selecting, if the users don't want to see the modal of selecting which AI provider they want to use again,
+they can simply tick the box under the providers that said *"Don't show again"*.
+But if they want to change the AI api provider, they can also go into `Settings` → `General` → `API Provider`.
 
 #### Provider Options
 
@@ -133,7 +137,7 @@ enters AI Chat for the first time, they choose how their AI requests are routed.
 
 **Option B — Bring Your Own Key (Cloud Mode)**
 
-- User selects their preferred provider (OpenAI, OpenRouter, Anthropic, etc.)
+- User selects their preferred provider *(Look at Goals for all of the API Provides)*
 - User pastes their own API key
 - Backend uses that key for all AI calls
 - Zylo stores no global billing key
@@ -174,6 +178,9 @@ def query_ai(user, prompt):
     elif provider == "anthropic":
         return query_anthropic(prompt, decrypt(user.api_key))
 
+    elif provider == [PROVIDER_NAME]:
+        return query_[PROVIDER_NAME](prompt, decrypt(user.api_key))
+
     else:
         return query_rule_based(prompt)
 ```
@@ -193,7 +200,7 @@ User's chosen provider
 
 ---
 
-## Phase 4 — OpenRouter Integration
+## Phase 4 — OpenRouter Integration *(Near-Future)*
 
 ### 4.1 Environment Variables
 
@@ -317,7 +324,7 @@ ALLOWED_ORIGINS           https://your-app.onrender.com
 
 ---
 
-## Phase 8A — PostgreSQL Migration & Security Hardening ★ NEW
+## Phase 8A — PostgreSQL Migration & Security Hardening (NEW)
 
 ### Why This Phase Is Critical
 
@@ -333,7 +340,7 @@ ALLOWED_ORIGINS           https://your-app.onrender.com
 
 ### 8A.1 — New Dependencies
 
-Add to `requirements.txt`:
+Add to the current `requirements.txt`:
 
 ```
 psycopg2-binary>=2.9       # PostgreSQL driver
@@ -405,7 +412,8 @@ python migrate_json_to_pg.py
 ```
 This reads all `.json` files, hashes any plaintext passwords with bcrypt, and inserts
 all records into PostgreSQL. Existing DB rows are not overwritten. Supports
-`DRY_RUN=1` to preview without writing.
+`DRY_RUN=1` to preview without writing. 
+After migration is done, can either delete or move to a locally folder that is in the `.gitignore`.
 
 **Step 5:** Update `app.py`
 - Replace all `load_*()` / `save_*()` JSON calls with SQLAlchemy helpers from `database.py`
@@ -559,7 +567,7 @@ falling back to JSON (which caused silent data divergence in the old design).
 - Custom domain via Render
 - S3 or Cloudflare R2 for file and media uploads instead of local disk
 - Redis for rate-limiter storage and Socket.IO adapter (multi-instance scaling)
-- Admin dashboard for user management and abuse monitoring
+- Admin dashboard for user management and abuse monitoring (Only `Admin`/`Developer` role users can access)
 
 ---
 
