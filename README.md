@@ -11,7 +11,7 @@
 <div align="center">
   
 ![Status](https://img.shields.io/badge/Status-beta-blue)
-![Build](https://img.shields.io/badge/Build-1.3.2-blue)
+![Build](https://img.shields.io/badge/Build-1.5.1-blue)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Web%20%7C%20Mobile-lightgrey)
