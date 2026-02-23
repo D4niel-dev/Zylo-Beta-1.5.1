@@ -35,11 +35,11 @@ paid upgrades.
 - Keep the current project structure intact
 - Avoid breaking existing assets (images, audio, icons, paths)
 - Support realtime chat via Socket.IO
-- Use cloud AI via OpenRouter
+- Use cloud AI via OpenRouter (Not yet decided)
 - Stay free / low-cost
 - Persist user data reliably across Render cold starts
 - Protect user passwords and sessions
-- Allow users to bring their own AI API key (Zero developer billing)
+- Allow users to bring their own AI API key (Zero developer billing - they'll pay for their own API key)
 - Provide all the endpoints of AI API key that they want to use, each in there own category :
    - **Major Providers (Commercial)** : OpenAI, Anthropic, Google (Gemini), Cohere, Groq, Microsoft Azure OpenAI, AI21 Labs, Mistral AI, xAi, Meta.
    - **Fast Providers (Dev-Focused)** : Together AI, Fireworks AI, DeepInfra, Anyscale, Perplexity, OctoAI
